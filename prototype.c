@@ -2,7 +2,6 @@
 
 Jonatan Cooper, Hoang Nguyen, Duc Huy Nguyen, James Singer, Hai Trinh
 
-
 */
 
 
@@ -11,31 +10,25 @@ Jonatan Cooper, Hoang Nguyen, Duc Huy Nguyen, James Singer, Hai Trinh
 #include <math.h>
 #include <stdlib.h>
 
-struct File
+struct fileDetail
 {
 	char* name;
-	char* type;
+	char* type;		/*encryption status*/
 	double size;
-	date_t date;
-	File_t* nextp;
+	fileDetail_t* nextp;
 };
-typedef struct File File_t;
+typedef struct fileDetail fileDetail_t;
 
-struct date
-{
-	int day;
-	int month;
-	int year;
-};
-typedef struct date date_t;
 
-struct User
+struct user
 {	
 	char* username;
 	char* password;
 	char* status;
+	user_t* nextp;
+
 };
-typedef struct User User_t;
+typedef struct user user_t;
 
 /*add different levels of users i.e. admin, user guest
   admin has access to everything, 
@@ -61,7 +54,7 @@ void showMenu();
 	Inputs: a file pointer
 	Outputs: 1 if successful, 0 if unsuccessful
 */
-int addtoStack(File_t* filep);
+//int addtoStack(File_t* filep);
 
 /*
 	Author: Jonatan
@@ -70,7 +63,7 @@ int addtoStack(File_t* filep);
 	Inputs: a file pointer
 	Outputs: 1 if successful, 0 if unsuccessful
 */
-int removeFromStack(File_t* filep);
+//int removeFromStack(File_t* filep);
 
 /*****************************************************************************
 user login
@@ -85,12 +78,32 @@ user login
 void showLoginMenu();
 
 /*
-	Author:Hoang 
-	this function verifies the credentials of a user
-	Inputs: the username and the password
-	Outputs: 1 if successful, 0 if unsuccessful
+	Author: Hoang
+	this function returns a 0 if login is incorrect,
+	a 1 if the user is an admin, and 2 if the user is a normal user,
+	inputs: login, password
+	outputs: integer to determine status.
 */
-int login(char* username, char* password);
+int loginAuthentication(char* username, char* password);
+
+
+
+/*
+	author Duc Hoy
+	change your own username and or password
+*/
+void modifyUser(user_t* user);
+
+/*
+	show all (nonadmin) users and their passwords
+*/
+void showAllUsers(user_t* user);
+
+/*
+
+
+*/
+void showAllFiles(fileDetail_t* fileDetail);
 
 /*
 	Author: Hoang
@@ -98,7 +111,7 @@ int login(char* username, char* password);
 	Inputs: User pointer
 	Outputs:none
 */
-void getUsername(User_t* userp);
+// void getUsername(User_t* userp);
 
 /*
 	Author Hoang
@@ -106,7 +119,7 @@ void getUsername(User_t* userp);
 	Inputs: User pointer
 	Outputs: none
 */
-void getPassword(User_t* userp);
+// void getPassword(User_t* userp);
 
 /*
 	Author: Duc Huy
@@ -114,7 +127,7 @@ void getPassword(User_t* userp);
 	Inputs: user pointer, password pointer
 	Outputs: none
 */
-void setPassword(User_t* userp, char* passwordp);
+// void setPassword(User_t* userp, char* passwordp);
 
 /*
 	Author: Duc Huy
@@ -122,11 +135,11 @@ void setPassword(User_t* userp, char* passwordp);
 	Inputs: user pointer, username pointer
 	Outputs: none
 */
-void setUsername(User_t* userp, char* usernamep);
+// void setUsername(User_t* userp, char* usernamep);
 
 /*
 	Author: Duc Huy
-	this function creates a new user
+	this function creates a new user, admin can only create a new user
 	Inputs: username and password pointers
 	Outputs: 1 if successful, 0 if unsuccessful
 */
@@ -136,53 +149,61 @@ void createNewUser(char* usernamep, char* passwordp);
 file information retrieval
 *****************************************************************************/
 
-/*
-	Author: Duc Huy
-	get selected file name
-	Inputs: file struct
-	Outputs: character pointer
+/*	
+	author: Hai
+	Add file to a linked list
+	int to determine whether it is successful or not
 */
-char* getFileName(File_t file);
+int addFile(char* fileName);
 
-/*
-	Author: James
-	get the location of a file
-	Inputs: file struct
-	Outputs:character pointer
-*/
-char* getFileLocation(File_t file);
 
-/*
-	Author: James
-	this function retrieves a user name from the user
-	Inputs: file struct
-	Outputs:character pointer
-*/
-int makeDirectory();
+// /*
+// 	Author: Duc Huy
+// 	get selected file name
+// 	Inputs: file struct
+// 	Outputs: character pointer
+// */
+// char* getFileName(File_t file);
 
-/*
-	Author: James 
-	this function returns the size of a file
-	Inputs: file struct
-	Outputs: the size of the file
-*/
-double getFileSize(File_t file);
+// /*
+// 	Author: James
+// 	get the location of a file
+// 	Inputs: file struct
+// 	Outputs:character pointer
+// */
+// char* getFileLocation(File_t file);
 
-/*
-	Author: James
-	returns date properties of a file
-	Inputs: file struct
-	Outputs: date struct
-*/
-date_t getDate(File_t file);
+// /*
+// 	Author: James
+// 	this function retrieves a user name from the user
+// 	Inputs: file struct
+// 	Outputs:character pointer
+// */
+// int makeDirectory();
 
-/*
-	Author: Hai
-	returns the file type of a specific file
-	Inputs: file pointer
-	Outputs: character pointer
-*/
-char* getFileType(File_t file);
+// /*
+// 	Author: James 
+// 	this function returns the size of a file
+// 	Inputs: file struct
+// 	Outputs: the size of the file
+// */
+// double getFileSize(File_t file);
+
+
+// 	Author: James
+// 	returns date properties of a file
+// 	Inputs: file struct
+// 	Outputs: date struct
+
+// date_t getDate(File_t file);
+
+
+// 	Author: Hai
+// 	returns the file type of a specific file
+// 	Inputs: file pointer
+// 	Outputs: character pointer
+
+// char* getFileType(File_t file);
 
 /*
 	Author: Hai
@@ -200,94 +221,94 @@ int setFileName(File_t file);
 */
 int deleteFile(File_t file);
 
-/*
-	Author: Hai
-	allows for a folder to be deleted
-	Inputs: char pointer
-	Outputs: 1 if successful, 0 if unsuccessful
-*/
-int deleteDirectory(char* namep);
+// /*
+// 	Author: Hai
+// 	allows for a folder to be deleted
+// 	Inputs: char pointer
+// 	Outputs: 1 if successful, 0 if unsuccessful
+// */
+// int deleteDirectory(char* namep);
 
-/*****************************************************************************
-sorting
-*****************************************************************************/
+// /*****************************************************************************
+// sorting
+// *****************************************************************************/
 
-/*
-	Author: TBD
-	allows the current view to be sorted by a specific metric
-	Inputs: the file directory, the metric to sort by (size, file type)
-	Outputs: 1 if successful, 0 if unsuccessful
-*/
-void sort(char* directory, int sort_type);
+// /*
+// 	Author: TBD
+// 	allows the current view to be sorted by a specific metric
+// 	Inputs: the file directory, the metric to sort by (size, file type)
+// 	Outputs: 1 if successful, 0 if unsuccessful
+// */
+// void sort(char* directory, int sort_type);
 
-//searching
+// //searching
 
-/*
-	Author: TBD
-	this function allows the user to search a directory for a certain 
-	file based on the name entered
-	Inputs: the file directory, the name of the file
-	Outputs: none
-*/
-void searchName(char* name, char* directory);
+// /*
+// 	Author: TBD
+// 	this function allows the user to search a directory for a certain 
+// 	file based on the name entered
+// 	Inputs: the file directory, the name of the file
+// 	Outputs: none
+// */
+// void searchName(char* name, char* directory);
 
-/*
-	Author: TBD
-	this function allows the user to search a directory for a certain 
-	file based on the date entered
-	Inputs: the file directory, the date of the file
-	Outputs: none
-*/
-void searchDate(Date date, int directory);
+// /*
+// 	Author: TBD
+// 	this function allows the user to search a directory for a certain 
+// 	file based on the date entered
+// 	Inputs: the file directory, the date of the file
+// 	Outputs: none
+// */
+// void searchDate(Date date, int directory);
 
-/*
-	Author: TBD
-	this function allows the user to search a directory for a certain 
-	file based on the date entered
-	Inputs: the file directory, the date of the file
-	Outputs: none
-*/
-void searchType(char* type, int directory);
 
-/*****************************************************************************
-Encryption & decryption
-*****************************************************************************/
+// 	Author: TBD
+// 	this function allows the user to search a directory for a certain 
+// 	file based on the date entered
+// 	Inputs: the file directory, the date of the file
+// 	Outputs: none
 
-/*
-	Author: TBD
-	this function encrypts a file
-	Inputs: File_t pointer
-	Outputs: 1 if successful, 0 if unsuccessful
-*/
-int encrypt(File_t* file);
+// void searchType(char* type, int directory);
 
-/*
-	Author: TBD
-	this function decrypts a file
-	Inputs: File_t pointer
-	Outputs:1 if successful, 0 if unsuccessful
-*/
-int decrypt(File_t* file);
+// /*****************************************************************************
+// Encryption & decryption
+// *****************************************************************************/
 
-/*****************************************************************************
-Compression and decompression
-*****************************************************************************/
+// /*
+// 	Author: TBD
+// 	this function encrypts a file
+// 	Inputs: File_t pointer
+// 	Outputs: 1 if successful, 0 if unsuccessful
+// */
+// int encrypt(File_t* file);
 
-/*
-	Author: TBD
-	this function compresses a file
-	Inputs: File_t pointer
-	Outputs: 1 if successful, 0 if unsuccessful
-*/
-int compress(File_t* file);
+// /*
+// 	Author: TBD
+// 	this function decrypts a file
+// 	Inputs: File_t pointer
+// 	Outputs:1 if successful, 0 if unsuccessful
+// */
+// int decrypt(File_t* file);
 
-/*
-	Author: TBD
-	this function decompresses a file
-	Inputs: File_t pointer
-	Outputs: 1 if successful, 0 if unsuccessful
-*/
-int decompress(File_t* file);
+// /*****************************************************************************
+// Compression and decompression
+// *****************************************************************************/
+
+// /*
+// 	Author: TBD
+// 	this function compresses a file
+// 	Inputs: File_t pointer
+// 	Outputs: 1 if successful, 0 if unsuccessful
+// */
+// int compress(File_t* file);
+
+// /*
+// 	Author: TBD
+// 	this function decompresses a file
+// 	Inputs: File_t pointer
+// 	Outputs: 1 if successful, 0 if unsuccessful
+// */
+// int decompress(File_t* file);
 
 /*****************************************************************************
 Main Function
