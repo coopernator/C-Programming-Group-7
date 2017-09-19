@@ -2,6 +2,14 @@
 
 Jonatan Cooper, Hoang Nguyen, Duc Huy Nguyen, James Singer, Hai Trinh
 
+
+
+In the end needs to write to database file
+
+1 is admin
+2 is user
+3 is public
+
 */
 
 
@@ -25,8 +33,9 @@ struct user
 	char* username;
 	char* password;
 	char* status;
+	fileDetail_t* userFile;
 	user_t* nextp;
-
+ 
 };
 typedef struct user user_t;
 
@@ -42,7 +51,7 @@ general
 	Author: Jonatan
 	this function displays the main menu that would be used to minipulate the 
 	files
-	Inputs: none
+	Inputs: integer, to determine if showing admin(1) or normal user(2) menu
 	Outputs:none
 */
 void showMenu();
@@ -99,7 +108,23 @@ void modifyUser(user_t* user);
 */
 void showAllUsers(user_t* user);
 
+
 /*
+	Author: Hai
+
+Check if there is a user, input 1 if yes and 0 if no
+
+*/
+int checkUser(user_t* user);
+
+
+
+
+
+
+/*
+
+
 
 
 */
