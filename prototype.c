@@ -269,7 +269,7 @@ int deleteFile(File_t file);
 // //searching
 
 // /*
-// 	Author: TBD
+// 	Author: Hai Anh
 // 	this function allows the user to search a directory for a certain 
 // 	file based on the name entered
 // 	Inputs: the file directory, the name of the file
