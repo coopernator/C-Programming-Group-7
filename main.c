@@ -19,7 +19,7 @@ WORKING
 
 
 NOT WORKING
-Hoang		login authentication needs working 
+Hoang		modify change username/password setters to work with any user
 Hai			print file and user list			
 James		check if the file is in the directory 	(if you can't open not in directory)
 James		modify print menu
@@ -30,26 +30,48 @@ Huy			read file list from database
 Jonatan		Get make file and headers working
 Jonatan		Encryption 	
 
+TO DO FOR NEXT TIME
+
 
 
 MAYBE
 	Add name to USER (+username)
 
 
+FUTURE
+	make password invisible??
+	require enter password to change user details
+	Password/username setters only work to change the first node, no matter what 
+		user tries to use them.
+	get current user out of the login authentication function.
 
 
 
-get file name and file type
+
+
+
+NOTES
+	Authenticate, allows any combo in the first time, after logging out doesn't 
+		allwo any combo in (not even correct one)
+	May need to change parameters of the File/make file function
+	Can probably functionalise some of the options that are shared between admin
+		and user
+
+
 
 
 */
-#define DEBUG
 
 
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
 #include <stdlib.h>
+
+
+#define _DEBUG
+
+
 
 #define MAX_FILENAME_SIZE 21
 #define MAX_FILETYPE_SIZE 11
@@ -113,9 +135,9 @@ File_t *searchName(File_t* head, char name[]);
 int addFile(File_t* head, char name[], char type[], date_t date);
 
 
-void printMenu(void);
-void help();
-int showLoginMenu(void);
+/*void printMenu(void);*/
+/*void help();*/
+/*int showLoginMenu(void);*/
 int loginAuthentication(char name[], char pass[], User_t* headp);
 
 
@@ -125,7 +147,7 @@ void showMenu(int userType);
 
 void setPassword(User_t *userp);
 void setUsername(User_t *userp);
-User_t* createNewUser(User_t *userlistp);
+User_t* createNewUser(User_t *userlistp, int status);
 
 
 
@@ -142,225 +164,409 @@ User_t* createNewUser(User_t *userlistp);
 
 
 int main()
-{
-	int status;
-	int choice=0;
-	int check /*= checkUser()*/ = 0;
-	User_t* userLL;
+{	
+	int status;		
+	int choice;
+	int subChoice;
+	int check;
+
+	User_t* userHead;
 	User_t* currentUser;
-	File_t* fileLL;
-	userLL = (User_t*) malloc(sizeof(User_t));
-	/*Add faulty memory test*/
+	File_t* fileHead;
 
 
-	/*Initialise - load files and username from database*/
+	userHead = (User_t*) malloc(sizeof(User_t));
+	if (userHead == NULL)
+	{
+		printf("fatal error");
+		return 1;
+	}
 
-	fileLL = (File_t*) malloc(sizeof(User_t));
+	currentUser = (User_t*) malloc(sizeof(User_t));	/*USE THIS AS THE INDEX???*/
+	if (currentUser == NULL)
+	{
+		printf("fatal error");
+		return 1;
+	}
+
+	fileHead = (File_t*) malloc(sizeof(User_t));
+	if (fileHead == NULL)
+	{
+		printf("fatal error");
+		return 1;
+	}
 
 
 
 
+	/*Initialise - load files and username from database
 
 
 
+	*/
 
 
+	/*see if there are any users in program*/
+	check /*= checkUser()*/ = 0;
+
+	/*If no users in database*/
 	if(check==0)
 	{
-
+		/*temp username and password*/
 		char name[MAX_USERNAME_SIZE], password[MAX_PASSWORD_SIZE];
 
-		printf("enter username\n");
+		/*Clear page*/
+		printf("\e[1;1H\e[2J");
+
+		printf("This is your first time setting up. Please enter details withou"
+			"t spaces:\n");
+		printf("Enter username:\n");
 		scanf("%s", name);
-		printf("enter password\n");
+		printf("Enter password:\n");
 		scanf("%s", password);
+		printf("\n");
+
+		strcpy(userHead -> username, name);
+		strcpy(userHead -> password, password);
+		userHead -> status = 1;
+		userHead -> nextp = NULL;
 
 
-		strcpy(userLL	-> username, name);
-		strcpy(userLL -> password, password);
+		#ifdef DEBUG
+			printf("DebugMain0\n");
+			printf("Details of first user:\n");
+			printf("name: %s, password %s, status %d", 
+				userHead -> username, userHead -> password, userHead -> status);
+			printf("DebugMainEnd\n");
 
-		/*currentUser -> status = 1;	
-		currentUser -> nextp =NULL;
-*/
-		check =1;
+		#endif
+
+		/*As there is a user, proceeds with program */
+		check = 1;
 	}
 
+
+	/*Users in database*/
 	if(check==1)
 	{
-		/*Default status is incorrect user/password*/
-		status=0;
-
-		while(status==0)
+		/*Loop forever (until exit condition is triggered)*/
+		while(check==1)
 		{
+			/*Default conditions*/
+			status=0;
+			choice=0;
+			subChoice=0;
 
-			int i=showLoginMenu();
-					printf("Debug3\n");
+
+			/*Clear page*/
+			printf("\e[1;1H\e[2J");
+
+
+/*NEED TO GET the CURRENT USER OUT OF LOGIN SOMEHOW*/
+			/*Code for login or exitting the program*/
+			while(status==0)
+			{
+				/*Temporary storage of name and password*/
+				char name[MAX_USERNAME_SIZE], password[MAX_PASSWORD_SIZE];
 	
-			char name[MAX_USERNAME_SIZE], password[MAX_PASSWORD_SIZE];
+				printf("LOGIN\n"
+				"Please enter your Username and password. If you don't have \n"
+				"an account, please ask an Admin to create one for you.\n"
+				"To exit the program, please type in EXIT (capitals).\n"
+				"To access the public directory, please type in PUBLIC "
+				"(in capitals).\n\n");
 
-			printf("enter username and password(+scanfcrap");
+				printf("Enter username:\n");
+				scanf("%s", name);
 
-			/*Need a way to return the username as well*/
-			status = loginAuthentication(name, password, userLL);
-
-			if(status==0)
-			{
-				printf("Incorrect username or password, please try again\n");
-			}
-		}
-
-
-		/*Admin User*/
-		if(status==1)
-		{
-
-			while(choice!=5)
-			{
-				/*Depends on implementation of showMenu*/
-				showMenu(1);
-				scanf("%d",&choice);
-				/*choice = showMenu(1);*/
-				
-				/*Modify account*/
-				if(choice==1)
+				/*Exit case*/
+				if (! strcmp(name, "EXIT"))
 				{
+	
+					/*Clear screen*/
+					printf("\e[1;1H\e[2J");
 
-
-					setPassword(userLL);
-					setUsername(userLL);
-					printf("%s,%s", userLL->username, userLL->password);
-
-/*					showAccountMenu();
-*/
-					/*if()
-					{
-						fun1(/* user_t* user *)
-					}
-					if else()
-					{
-						fun2(/* user_t* user *)
-					}*/
-				}
-				/*Modify user account*/
-				else if(choice==2)
-				{
-
-				}
-				/*encrypt/decrypt admin files*/
-				else if(choice==3)
-				{
-
-					printf("Debugf1\n");
-
-					char name[MAX_FILENAME_SIZE], type[MAX_FILETYPE_SIZE];
-					date_t date2;
-					strcpy(name, "nametest");
-					strcpy(type, "typetest");
-					date2.day =01;
-					date2.month=1;
-					date2.year = 1900;
-										printf("Debugf2\n");
-
-
-
-					addFile(fileLL, name, type, date2);
-					printf("Debugf3\n");
-					printf("%s\n", getFileType(fileLL));
-					setPassword(userLL);
-					setUsername(userLL);
-
-
-
-
-				}
-				/*encrypt/decrypt user files*/
-				else if(choice==4)
-				{
-
-				}
-				/*Logout*/
-				else if(choice==5)
-				{
 					return 0;
 				}
+
+				/*Public user case*/
+				else if (! strcmp(name, "PUBLIC"))
+				{
+					status = 3;
+				}
+
+				/*Normal login*/
 				else
 				{
-					printf("error");
-					return 1;
+					printf("Enter password:\n");
+					scanf("%s", password);
+
+					/*status should be 0, 1, or 2*/
+					status = loginAuthentication(name, password, userHead);
+
+					#ifdef DEBUG
+						printf("DebugMain\n");
+						printf("status(normal login) = %d\n", status);
+
+					#endif
+
+				}
+
+
+				if(status==0)
+				{
+					printf("\nIncorrect username or password, please try again"
+						"\n\n\n");
+				}
+		
+			}
+
+
+			/*Admin User*/
+			if(status==1)
+			{
+
+				/*Stay in admin account until logoff (choice==5)*/
+				while(choice!=5)
+				{
+
+					showMenu(status);
+					scanf("%d",&choice);
+					
+					/*Modify account*/
+					if(choice==1)
+					{
+						printf("Would you like to change your username or"
+						" password?\n"
+						"WIP1 Change username\n"
+						"WIP2 Change password\n"
+						"3 Neither\n"
+						"IMPLEMENTATION is WIP\n"
+							);
+						scanf("%d", &subChoice);
+
+						if(subChoice==1)
+						{
+							setUsername(userHead);
+							printf("your new username is ...\n");
+						}
+						else if(subChoice==2)
+						{
+							setPassword(userHead);
+							printf("your new password is ...\n");
+
+
+						}
+
+						else if(subChoice==3)
+						{
+
+						}
+
+						else
+						{
+							printf("Please enter a valid choice\n");
+
+						}
+					}
+
+
+					/*Modify user account*/
+					else if(choice==2)
+					{
+						printf("What would you like to do?\n"
+							"WIP1 View existing users\n"
+							"WIP2 Create new user\n"
+							"WIP3 Create new admin user\n"
+							"WIP4 Delete user"
+							"WIP5 Change user details\n"
+							"6 Do nothing\n"
+							"NOTE: IMPLEMENTATION IS WIP\n"
+							);
+						scanf("%d", &subChoice);
+
+						if(subChoice==1)
+						{
+
+						}
+
+						/*create new user*/
+						else if(subChoice==2)
+						{
+							createNewUser(userHead, 2);
+							printf("UNTESTD!!!!");
+						}
+
+						/*create new admin*/
+						else if(subChoice==3)
+						{
+							createNewUser(userHead, 1);
+							printf("UNTESTD!!!!");
+
+
+						}
+
+						else if(subChoice==4)
+						{
+
+						}
+
+						else if(subChoice==5)
+						{
+
+						}
+
+						else if(subChoice==6)
+
+
+
+						else
+						{
+							printf("Please enter a valid choice\n");
+
+						}
+
+						/*if(subChoice==???),
+						View existing users
+						Make new user
+						Modify users etc...
+
+
+						
+
+						 */
+
+
+					}
+
+					/*very WIP*/
+					/*encrypt/decrypt admin files*/
+					else if(choice==3)
+					{
+
+						printf("What would you like to do?"
+							"WIP1 ..."
+							"WIP2 ..."
+							"WIP3 ..."
+							);
+
+
+						#ifdef DEBUG
+							printf("DebugMain\n");
+						#endif
+
+						/*Temp variables. Date is WIP*/
+						char name[MAX_FILENAME_SIZE], type[MAX_FILETYPE_SIZE];
+						date_t date2;
+
+						strcpy(name, "nametest");
+						strcpy(type, "typetest");
+						date2.day =01;
+						date2.month=1;
+						date2.year = 1900;
+
+						#ifdef DEBUG
+							printf("DebugMain\n");
+						#endif
+
+
+						addFile(fileHead, name, type, date2);
+
+						#ifdef DEBUG
+							printf("DebugMain\n");
+						#endif					
+						printf("%s\n", getFileType(fileHead));
+					
+					}
+
+					/*encrypt/decrypt user files*/
+					else if(choice==4)
+					{
+						printf("What would you like to do?"
+							"WIP1 ..."
+							"WIP2 ..."
+							"WIP3 ..."
+							);
+					}
+
+					/*Logout*/
+					else if(choice==5)
+					{
+						;
+					}
+					else
+					{
+						printf("Please enter a valid choice\n");
+					}
 				}
 			}
-		}
 
-		/*normal user*/
-		else if(status==2)
-		{
-			int choice;
 
-			/*Depends on implementation of showMenu*/
-			showMenu(2);
-			scanf("%d",&choice);
-			/*choice = showMenu(2);*/
 
-			/*Modify account*/
-			if(choice==1)
+			/*normal user*/
+			else if(status==2)
 			{
+				while(choice!=3)
+				{
+					showMenu(status);
+					scanf("%d",&choice);
 
-			}			
-			/*encrypt/decrypt  files*/
-			else if(choice==2)
+					/*Modify account*/
+					if(choice==1)
+					{
+
+					}			
+					/*encrypt/decrypt  files*/
+					else if(choice==2)
+					{
+						
+					}
+					/*Logout*/
+					else if(choice==3)
+					{
+						;
+					}
+					else
+					{
+						printf("Please enter a valid choice\n");
+					}
+				}					
+
+			}
+
+			/*public user*/
+			else if(status==3)
 			{
+				while(choice!=2)
+				{
+					showMenu(status);
+					scanf("%d", &choice);
 				
+					/*compress files*/
+					if(choice==1)
+					{
+	
+					}
+					/*Logout*/
+					else if(choice==2)
+					{
+						;
+					}
+					else
+					{
+						printf("Please enter a valid choice\n");
+					}
+				}
 			}
-			/*Logout*/
-			else if(choice==3)
-			{
-				return 0;
-			}
+
 			else
 			{
 				printf("error");
 				return 1;
 			}
-		}
-
-		/*public user*/
-		else if(status==3)
-		{
-			int choice;
-
-			/*Depends on implementation of showMenu*/
-			showMenu(3);
-			scanf("%d", &choice);
-			/*choice = showMenu(3);*/
-		
-			/*compress files*/
-			if(choice==1)
-			{
-
-			}
-			/*Logout*/
-			else if(choice==2)
-			{
-				return 0;
-			}
-			else
-			{
-				printf("error");
-				return 1;
-			}
-		}
-
-		else if(status==4)
-		{
-			return 0;
-		}
-
-		else
-		{
-			printf("error");
-			return 1;
 		}
 	}
+
 
 	else
 	{
@@ -446,7 +652,8 @@ int setFileName(File_t *filep){
 	printf("Please enter a filename:");
 	fscanf(stdin, "%[MAX_FILE_NAME-1]s", name);
 	
-	if(/*there is no other file has the same name, need a function to check for duplicate*/1==1){
+	/*there is no other file has the same name, need a function to check for duplicate*/
+	if(1==1){
 		filep->name[0] = '\0';
 		strcpy(filep->name, name);
 		return 1;
@@ -469,7 +676,7 @@ int deleteFile(File_t *head){
 		return 0;
 	}
 	else{
-		while( (strcmp(currentp->name, name)!= 0 ) && (currentp->nextp != NULL) ){
+		while((strcmp(currentp->name, name)!= 0 ) && (currentp->nextp != NULL)){
 			if(strcmp(currentp->nextp->name, name)!= 0)
 				currentp = currentp->nextp;
 			else
@@ -531,7 +738,7 @@ int addFile(File_t* head, char name[], char type[], date_t date){
 
 
 
-int showLoginMenu(void)
+/*int showLoginMenu(void)
 {
 	int choice;
 	do
@@ -573,10 +780,10 @@ int showLoginMenu(void)
 	
 
 	return 0;
-}
+}*/
 
 
-void printMenu(void)
+/*void printMenu(void)
 {
 	printf("\n"
 	"1. a\n"
@@ -586,7 +793,7 @@ void printMenu(void)
 	"5. e\n"
 	"6. exit the program\n"
 	"Enter your choice>");
-}
+}*/
 
 
 void help()
@@ -598,11 +805,11 @@ int loginAuthentication(char name[], char pass[], User_t* headp)
 {
 	int check = 0;
 	User_t* user = headp;
-	while(user != NULL )
+	while(user!= NULL )
 	{
-		if(strcmp(user->username, name) && strcmp(user->password, pass))
+		if((strcmp(user->username, name)==0)&&(strcmp(user->password, pass)==0))
 		{
-			return check = 1;
+			return check = user->status;
 		}
 		else
 		{
@@ -622,8 +829,8 @@ void showMenu(int userType){
 	
 	char* options = "Logged in as Administrator";
 	
-/*	printf("\e[1;1H\e[2J");
-*/
+	printf("\e[1;1H\e[2J");
+
 	if(userType == 1)
 	{
 	/*administrator*/
@@ -639,8 +846,7 @@ void showMenu(int userType){
 	/*standard user*/
 		options = "Logged in as standard user";
 		printf("%s \n\n", options);
-	printf("1. Modify Details\t\t\t2. Encrypt/Decrypt"
-		" 3. Compresses/Decompress\n\t3. Exit\n");
+	printf("1. Modify Details\t\t2. Encrypt/Decrypt\t\t3. Exit\n");
 
 	printf("\n");
 		
@@ -650,7 +856,7 @@ void showMenu(int userType){
 		/*guest*/
 		options = "Logged in as guest";
 		printf("%s \n\n", options);
-	printf("1. Compress/Decompress 5. Exit\n");
+	printf("1. Compress/Decompress\t\t2. Exit\n");
 
 	printf("\n");
 		
@@ -671,7 +877,7 @@ void showMenu(int userType){
 void setPassword(User_t *userp)
 {
 	char pass[PASS_SIZE];
-	printf("Enter the password you want to change");
+	printf("Enter your new password: ");
 	scanf("%s", pass);
 	strcpy(userp->password, pass);
 }
@@ -680,14 +886,14 @@ void setPassword(User_t *userp)
 void setUsername(User_t *userp)
 {
 	char user[USERNAME_SIZE];
-	printf("Enter the username you want to change");
+	printf("Enter your new username: ");
 	scanf("%s", user);
 	strcpy(userp->username, user);
 }
 
 
 
-User_t* createNewUser(User_t *userlistp)
+User_t* createNewUser(User_t *userlistp, int status)
 {
 	User_t* u = userlistp;
 	while(u->nextp != NULL)
@@ -700,6 +906,7 @@ User_t* createNewUser(User_t *userlistp)
 	scanf("%s", u->username);
 	printf("Enter desired password:\n");
 	scanf("%s",  u->password);
+	u->status = status;
 
 	return u;
 }
