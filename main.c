@@ -374,7 +374,7 @@ int main()
 					/*Modify user account*/
 					else if(choice==2)
 					{
-						printf("What would you like to do?\n"
+						printf("What would you like to do (enter a number)?\n"
 							"WIP1 View existing users\n"
 							"WIP2 Create new user\n"
 							"WIP3 Create new admin user\n"
@@ -417,7 +417,9 @@ int main()
 						}
 
 						else if(subChoice==6)
+						{
 
+						}
 
 
 						else
@@ -444,11 +446,12 @@ int main()
 					else if(choice==3)
 					{
 
-						printf("What would you like to do?"
+						printf("What would you like to do (enter a number)?"
 							"WIP1 ..."
 							"WIP2 ..."
 							"WIP3 ..."
 							);
+						scanf("%d", &subChoice);
 
 
 						#ifdef DEBUG
@@ -482,11 +485,13 @@ int main()
 					/*encrypt/decrypt user files*/
 					else if(choice==4)
 					{
-						printf("What would you like to do?"
+						printf("What would you like to do? (enter a number)"
 							"WIP1 ..."
 							"WIP2 ..."
 							"WIP3 ..."
 							);
+						scanf("%d", &subChoice);
+						
 					}
 
 					/*Logout*/
