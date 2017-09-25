@@ -30,7 +30,13 @@ Huy			read file list from database
 Jonatan		Get make file and headers working
 Jonatan		Encryption 	
 
+
+
+
+
 TO DO FOR NEXT TIME
+Hai 	Delete user
+james 	change uesr details
 
 
 
@@ -59,6 +65,8 @@ NOTES
 
 
 
+add current user
+
 
 */
 
@@ -77,7 +85,7 @@ NOTES
 #define MAX_FILETYPE_SIZE 11
 #define MAX_USERNAME_SIZE 21
 #define MAX_PASSWORD_SIZE 16
-#define MAX_STATUS_SIZE 6
+
 
 
 #define USERNAME_SIZE 10
@@ -114,8 +122,8 @@ struct User
 	char username[MAX_USERNAME_SIZE];
 	char password[MAX_PASSWORD_SIZE];
 	int status;
+	File_t *fileHead;
 	struct User* nextp;
-	/**/
 };
 typedef struct User User_t;
 
@@ -126,13 +134,20 @@ typedef struct User User_t;
 
 
 
+/**********Function prototype**********/
 date_t getDate(File_t *filep);
 char *getFileType(File_t *filep);
-int setFileName(File_t *filep);
-int deleteFile(File_t *filep);
-int deleteDirectory(char *namep);
-File_t *searchName(File_t* head, char name[]);
-int addFile(File_t* head, char name[], char type[], date_t date);
+int setFileName(File_t *filep, File_t *headFilep);
+File_t *searchFilename(File_t* head, char name[]);
+int addFile(File_t* head, char name[], char type[], date_t date); /*worked*/
+int deleteFile(File_t *headFilep, char name[]); /*worked*/
+void displayUsers(User_t *headUserp); /*worked*/
+void displayFiles(File_t *headFilep); /*worked*/
+int checkDuplicateUser(User_t *headUser, char name[]); /*worked*/
+int checkDuplicateFile(File_t *headFile, char name[]); /*worked*/
+
+
+
 
 
 /*void printMenu(void);*/
@@ -150,9 +165,10 @@ void setUsername(User_t *userp);
 User_t* createNewUser(User_t *userlistp, int status);
 
 
+int checkUser(User_t* userHeadp);
 
 
-
+char *getUsername(User_t* userp);
 
 
 
@@ -172,7 +188,9 @@ int main()
 
 	User_t* userHead;
 	User_t* currentUser;
-	File_t* fileHead;
+/*	File_t* fileHead;
+*/
+
 
 
 	userHead = (User_t*) malloc(sizeof(User_t));
@@ -189,8 +207,10 @@ int main()
 		return 1;
 	}
 
-	fileHead = (File_t*) malloc(sizeof(User_t));
-	if (fileHead == NULL)
+
+
+	userHead ->fileHead = (File_t*) malloc(sizeof(User_t));
+	if (userHead ->fileHead == NULL)
 	{
 		printf("fatal error");
 		return 1;
@@ -200,14 +220,28 @@ int main()
 
 
 	/*Initialise - load files and username from database
-
-
-
 	*/
 
 
+
+
+
+	userHead ->fileHead->name[0] = '\0';
+	userHead ->fileHead->type[0] = '\0';
+	userHead ->fileHead->size = 0;
+/*	fileHead->date = date;
+*/	userHead ->fileHead->nextp = NULL;
+
+
+
+
+
+	/*Used to ensure checkUser works properly. May be unenccessary depending
+	how database file read function works*/
+	userHead -> status = 0;
+
 	/*see if there are any users in program*/
-	check /*= checkUser()*/ = 0;
+	check = checkUser(userHead);
 
 	/*If no users in database*/
 	if(check==0)
@@ -241,8 +275,8 @@ int main()
 
 		#endif
 
-		/*As there is a user, proceeds with program */
-		check = 1;
+		/*confirm user is now created */
+		check = checkUser(userHead);
 	}
 
 
@@ -338,9 +372,9 @@ int main()
 					{
 						printf("Would you like to change your username or"
 						" password?\n"
-						"WIP1 Change username\n"
-						"WIP2 Change password\n"
-						"3 Neither\n"
+						"1 Change username (works but unelegant)\n"
+						"2 Change password (works but unelegatn)\n"
+						"3 Return to menu\n"
 						"IMPLEMENTATION is WIP\n"
 							);
 						scanf("%d", &subChoice);
@@ -374,71 +408,74 @@ int main()
 					/*Modify user account*/
 					else if(choice==2)
 					{
-						printf("What would you like to do (enter a number)?\n"
-							"WIP1 View existing users\n"
-							"WIP2 Create new user\n"
-							"WIP3 Create new admin user\n"
-							"WIP4 Delete user"
-							"WIP5 Change user details\n"
-							"6 Do nothing\n"
-							"NOTE: IMPLEMENTATION IS WIP\n"
-							);
-						scanf("%d", &subChoice);
+						while(subChoice!=6)
+						{	
+							printf("\n\nWhat would you like to do (enter a number)?\n"
+								"WIP1 View existing users\n"
+								"2 Create new user(works but unelegant)\n"
+								"3 Create new admin user(works but unelegant)\n"
+								"WIP4 Delete user\n"
+								"WIP5 Change user details\n"
+								"6 Return to menu\n"
+								"NOTE: IMPLEMENTATION IS WIP\n"
+								);
+							scanf("%d", &subChoice);
 
-						if(subChoice==1)
-						{
+							if(subChoice==1)
+							{
 
+								printf("\n\nUsers are:\n");
+								displayUsers(userHead);
+							}
+
+							/*create new user*/
+							else if(subChoice==2)
+							{
+								createNewUser(userHead, 2);
+	/*							printf("UNTESTD!!!!");
+	*/						}
+
+							/*create new admin*/
+							else if(subChoice==3)
+							{
+								createNewUser(userHead, 1);
+	/*							printf("UNTESTD!!!!");
+	*/
+
+							}
+
+							else if(subChoice==4)
+							{
+
+							}
+
+							else if(subChoice==5)
+							{
+
+							}
+
+							else if(subChoice==6)
+							{
+
+							}
+
+
+							else
+							{
+								printf("Please enter a valid choice\n");
+
+							}
+
+							/*if(subChoice==???),
+							View existing users
+							Make new user
+							Modify users etc...
+
+
+							
+
+							 */
 						}
-
-						/*create new user*/
-						else if(subChoice==2)
-						{
-							createNewUser(userHead, 2);
-							printf("UNTESTD!!!!");
-						}
-
-						/*create new admin*/
-						else if(subChoice==3)
-						{
-							createNewUser(userHead, 1);
-							printf("UNTESTD!!!!");
-
-
-						}
-
-						else if(subChoice==4)
-						{
-
-						}
-
-						else if(subChoice==5)
-						{
-
-						}
-
-						else if(subChoice==6)
-						{
-
-						}
-
-
-						else
-						{
-							printf("Please enter a valid choice\n");
-
-						}
-
-						/*if(subChoice==???),
-						View existing users
-						Make new user
-						Modify users etc...
-
-
-						
-
-						 */
-
-
 					}
 
 					/*very WIP*/
@@ -446,40 +483,61 @@ int main()
 					else if(choice==3)
 					{
 
-						printf("What would you like to do (enter a number)?"
-							"WIP1 ..."
-							"WIP2 ..."
-							"WIP3 ..."
+						printf("What would you like to do (enter a number)?\n"
+							"1 Add file\n"
+							"2 Delete file\n"
+							"WIP3 Encrypt file\n"
+							"WIP4 Decrypt file\n"
+							"WIP5 Compress file\n"
+							"WIP6 Decompress file\n"
+							"7 show all files\n"
+							"WIP8 SORT AND SEARCH IF TIME\n"
+							"9 Return to menu\n"
 							);
 						scanf("%d", &subChoice);
 
+						/*Dummy  variable for date*/
+						if(subChoice==1)
+						{
 
-						#ifdef DEBUG
-							printf("DebugMain\n");
-						#endif
-
-						/*Temp variables. Date is WIP*/
 						char name[MAX_FILENAME_SIZE], type[MAX_FILETYPE_SIZE];
 						date_t date2;
 
-						strcpy(name, "nametest");
-						strcpy(type, "typetest");
+						printf("what is the file name");
+						scanf("%s", name);
+						printf("what is the file type");
+						scanf("%s", type);
+
+						
 						date2.day =01;
 						date2.month=1;
 						date2.year = 1900;
 
-						#ifdef DEBUG
-							printf("DebugMain\n");
-						#endif
+						 
 
-
-						addFile(fileHead, name, type, date2);
-
-						#ifdef DEBUG
-							printf("DebugMain\n");
-						#endif					
-						printf("%s\n", getFileType(fileHead));
+						addFile(userHead->fileHead, name, type, date2);
+						printf("ADDED FILE:\n");
+						printf("N: %s, T: %s", userHead->fileHead->name, 
+							userHead->fileHead->type);
 					
+						}
+
+						else if(subChoice==2)
+						{
+							char name[MAX_FILENAME_SIZE];
+							printf("what is the name of the file you want to delete?\n");
+							scanf("%s", name);
+
+							deleteFile(userHead->fileHead, name);
+						}
+
+
+						else if(subChoice==7)
+						{
+							displayFiles(userHead->fileHead);
+						}
+
+
 					}
 
 					/*encrypt/decrypt user files*/
@@ -631,8 +689,14 @@ int main()
 	*/
 }
 
-
-
+/**********************************************************
+getDate
+-This function return the date of the file
+-Inputs: 
+	+ *filep: pointer to the target file
+-Outputs:
+	+ namep: pointer to a date_t that contains the file date
+***********************************************************/
 date_t getDate(File_t *filep){
 	date_t date;
 	
@@ -643,22 +707,41 @@ date_t getDate(File_t *filep){
 	return date;
 }
 
-char *getFileType(File_t *filep){
+
+/**********************************************************
+getFileName
+-This function return the filename
+-Inputs: 
+	+ *filep: pointer to the target file
+-Outputs:
+	+ namep: pointer to a string that contains the filename
+***********************************************************/
+char *getFileName(File_t *filep){
 	int len;
 	len  = strlen(filep->name);
-	char *typep =(char*) malloc(len + 1);
-	strcpy(typep, filep->name);
-	return typep;
+	char *namep =(char*) malloc(len + 1);
+	strcpy(namep, filep->name);
+	return namep;
 }
 
-int setFileName(File_t *filep){
+
+/**********************************************************
+setFileName
+-This function allows user to make change to filename
+-Inputs: 
+	+ *filep: pointer to the target file
+	+ *headFilep: pointer to the head file of the linked list
+	   where 'filep' belongs to
+-Outputs:
+	+ added: return 1 if successfully deleted a file, 0 otherwise
+***********************************************************/
+int setFileName(File_t *filep, File_t *headFilep){
 	char name[MAX_FILENAME_SIZE];
 	
 	printf("Please enter a filename:");
 	fscanf(stdin, "%[MAX_FILE_NAME-1]s", name);
 	
-	/*there is no other file has the same name, need a function to check for duplicate*/
-	if(1==1){
+	if(!checkDuplicateFile(headFilep, name)){
 		filep->name[0] = '\0';
 		strcpy(filep->name, name);
 		return 1;
@@ -668,74 +751,206 @@ int setFileName(File_t *filep){
 	return 0;
 }
 
-int deleteFile(File_t *head){ 
-	char name[MAX_FILENAME_SIZE];
-	File_t *filep = NULL;
-	File_t *currentp = NULL;
-	
-	printf("Please enter the filename you want to delete:");
-	fscanf(stdin, "%[MAX_FILE_NAME-1]s", name);
-	filep = searchName(head, name);
-	if(filep == NULL){
-		printf("Error, file does not exist.\n");
-		return 0;
-	}
-	else{
-		while((strcmp(currentp->name, name)!= 0 ) && (currentp->nextp != NULL)){
-			if(strcmp(currentp->nextp->name, name)!= 0)
-				currentp = currentp->nextp;
-			else
-				break;
-		}
-	}
-	
-	currentp->nextp = filep->nextp;
-	return 1;
-}
 
-File_t *searchName(File_t* head, char name[]){
-	File_t *currentp = head;
+/**********************************************************
+*searchFilename
+-This function searches for a file by name
+-Inputs: 
+	+ *headFilep: pointer to the head file of the linked list
+	+ name[]: name of the file we are looking for
+-Outputs:
+	+ currentp: return the pointer to the found file, return NULL if no file matched
+***********************************************************/
+File_t *searchFilename(File_t* headFilep, char name[]){
+	File_t *currentp = headFilep;
 	int check = 0;
 	
-	while( currentp->nextp != NULL ){
-		if(strcmp(currentp->name, name) != 0){
-			currentp = currentp->nextp;
+	while( currentp != NULL ){
+		if(strcmp(currentp->name, name) == 0){
+			check =1;
 		}
 		else{
-			check =1;
+			currentp = currentp->nextp;
 		}
 		
 		if(check)
 			break;
 	}
 	
-	if(!check){
-		return NULL;
-	}
-	
 	return currentp;
 }
 
-int addFile(File_t* head, char name[], char type[], date_t date){
-	File_t *currentp = head;
+
+
+/**********************************************************
+displayUsers
+-This function prints all users in a user linked list 
+(could be admin or user linked list)
+-Inputs: 
+	+ *headUserp: pointer to the head user of the linked list
+-Outputs:
+	+ none
+***********************************************************/
+void displayUsers(User_t *headUserp){
+	User_t *currentp = headUserp;
 	
-	while(currentp->nextp != NULL){
+	if(currentp == NULL)
+		printf("THERE IS NO ACCOUNT IN THIS LINKED LIST.\n");
+	else{
+		while(currentp != NULL){
+			printf("%s\n", currentp->username);
+			currentp = currentp->nextp;
+		}
+	}
+}
+
+
+/**********************************************************
+displayFiles
+-This function prints all files that a user has
+-Inputs: 
+	+ *headFilep: pointer to the head file of the linked list
+-Outputs:
+	none
+***********************************************************/
+void displayFiles(File_t *headFilep){
+	File_t *currentp = headFilep;
+	
+	if(currentp == NULL)
+		printf("THIS USER DOES NOT HAVE ANY FILES.\n");
+	else{
+		/*loop each element in the linked list until currentp is NULL*/
+		while(currentp != NULL){
+			printf("%-10.10s %-10.10s %02d-%02d-%04d %.3f\n", 
+				currentp->name, currentp->type,
+				currentp->date.day, currentp->date.month,
+				currentp->date.year, currentp->size
+			);
+			currentp = currentp->nextp;
+		}
+	}
+}
+
+
+/**********************************************************
+checkDuplicateUser
+-This function checks if there is any duplicate user
+(have the same name) in the provided linkedlist
+-Inputs: 
+	+ *headUserp: pointer to the head user of the linked list
+	+ name[]: the name we use to look for duplicates
+-Outputs:
+	+ check: 1 if there is a duplicate, 0 otherwise
+***********************************************************/
+int checkDuplicateUser(User_t *headUserp, char name[]){
+	int check = 0;
+	User_t *currentp = headUserp;
+	
+	/*loop each element in the linked list until currentp is NULL*/
+	while(currentp != NULL){
+		if(strcmp(currentp->username, name) == 0){
+			check = 1;
+			break;
+		}
+		currentp = currentp->nextp;
+	}	
+	return check;
+}
+
+
+/**********************************************************
+checkDuplicateFile
+-This function checks if there is any duplicate file 
+(have the same name) in the provided linkedlist
+-Inputs: 
+	+ *headFilep: pointer to the head file of the linked list
+	+ name[]: the name we use to look for duplicates
+-Outputs:
+	+ check: 1 if there is a duplicate, 0 otherwise
+***********************************************************/
+int checkDuplicateFile(File_t *headFilep, char name[]){
+	int check = 0;
+	File_t *currentp = headFilep;
+	
+	/*loop each element in the linked list until currentp is NULL*/
+	while(currentp != NULL){
+		if(strcmp(currentp->name, name) == 0){
+			check = 1;
+			break;
+		}
 		currentp = currentp->nextp;
 	}
-	currentp->nextp = (File_t*) malloc(sizeof(File_t));
+	return check;
+}
+
+
+/**********************************************************
+deleteFile
+-This function deletes a file in a linked list by its name
+-Inputs: 
+	+ *headFilep: pointer to the head file of the linked list
+	+ name[]: name of the file we want to delete
+-Outputs:
+	+ added: return 1 if successfully deleted a file, 0 otherwise
+***********************************************************/
+int deleteFile(File_t *headFilep, char name[]){ 
+	File_t *foundp = NULL;
+	File_t *currentp = headFilep;
 	
-	strcpy(currentp->name,name);
-	strcpy(currentp->type,type);
-	currentp->size = 0;
-	currentp->date = date;
-	currentp->nextp = NULL;
+	if(headFilep == NULL){
+		printf("ERROR, THERE IS NO FILE TO DELETE.\n");
+		return 0;
+	}
 	
+	foundp = searchFilename(headFilep, name);
+	if(foundp == NULL){
+		printf("ERROR, FILE DOES NOT EXIST.\n");
+		return 0;
+	}
+	else{
+		while( strcmp(currentp->nextp->name, foundp->name) ){
+				currentp = currentp->nextp;
+		}
+	}
+	
+	currentp->nextp = foundp->nextp;
 	return 1;
 }
 
 
+/**********************************************************
+addFile
+-This function adds a new file to a linked list
+-Inputs: 
+	+ *headFilep: pointer to the head file of the linked list
+	+ name[]: name of the new file
+	+ type[]: type of the new file
+	+ date: date of the new file
+-Outputs:
+	+ added: return 1 if successfully added a new file, 0 otherwise
+***********************************************************/
+int addFile(File_t* headFilep, char name[], char type[], date_t date){
+	File_t *currentp = headFilep;
+	int added = 0;
 
-
+	/*loop each element in the linked list until nextp is NULL*/
+	while(currentp->nextp != NULL){
+		currentp = currentp->nextp;
+	}
+	/*after the loop, currentp now points to a node after the last
+	element in the linked list*/
+	
+	if(checkDuplicateFile(headFilep, name) != 1){
+		currentp->nextp = (File_t*) malloc(sizeof(File_t));
+		strcpy(currentp->nextp->name, name);
+		strcpy(currentp->nextp->type, type);
+		currentp->nextp->size = 0;
+		currentp->nextp->date = date;
+		currentp->nextp->nextp = NULL;
+		added = 1;
+	}
+	return added;
+}
 
 
 
@@ -906,7 +1121,7 @@ User_t* createNewUser(User_t *userlistp, int status)
 		u = u->nextp;
 	}
 	u->nextp = (User_t*) malloc(sizeof(User_t));
-	
+	u = u->nextp;
 	printf("Enter desired username:\n");
 	scanf("%s", u->username);
 	printf("Enter desired password:\n");
@@ -916,3 +1131,47 @@ User_t* createNewUser(User_t *userlistp, int status)
 	return u;
 }
 
+
+
+
+int checkUser(User_t* userHeadp)
+{
+	if(userHeadp -> status == 0)
+	{
+		return 0;
+	}
+	else if( (userHeadp -> status == 1) ||(userHeadp -> status ==2))
+	{
+		return 1;
+	}
+	else
+	{
+		return 2;
+	}
+
+
+}
+
+
+
+char *getFileType(File_t *filep){
+	int len;
+	len  = strlen(filep->name);
+	char *typep =(char*) malloc(len + 1);
+	strcpy(typep, filep->name);
+	return typep;
+}
+
+
+
+char *getUsername(User_t* userp)
+{
+	
+	int length;
+	length = strlen (userp->username);
+	char *usernamep = (char*) malloc(length+1);
+	strcpy(usernamep, userp->username);
+	return usernamep;
+	
+	 
+}
