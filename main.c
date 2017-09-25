@@ -156,13 +156,18 @@ int checkDuplicateFile(File_t *headFile, char name[]); /*worked*/
 int loginAuthentication(char name[], char pass[], User_t* headp);
 
 
+
+
+
+
+
 void showMenu(int userType);
 
 
 
 void setPassword(User_t *userp);
 void setUsername(User_t *userp);
-User_t* createNewUser(User_t *userlistp, int status);
+int createNewUser(User_t *userlistp, int status);
 
 
 int checkUser(User_t* userHeadp);
@@ -171,46 +176,38 @@ int checkUser(User_t* userHeadp);
 char *getUsername(User_t* userp);
 
 
+User_t* getCurrentUser(char* name, User_t* userHeadp);
+
+void clear(void);
 
 
 
 
+/*******************************************************************************
+Main function
+*******************************************************************************/
 
-
-
-
-int main()
+int main(void)
 {	
 	int status;		
 	int choice;
 	int subChoice;
 	int check;
 
-	User_t* userHead;
-	User_t* currentUser;
-/*	File_t* fileHead;
-*/
+	User_t* userHeadp;
+	User_t* currentUserp;
 
 
 
-	userHead = (User_t*) malloc(sizeof(User_t));
-	if (userHead == NULL)
+	userHeadp = (User_t*) malloc(sizeof(User_t));
+	if (userHeadp == NULL)
 	{
 		printf("fatal error");
 		return 1;
 	}
 
-	currentUser = (User_t*) malloc(sizeof(User_t));	/*USE THIS AS THE INDEX???*/
-	if (currentUser == NULL)
-	{
-		printf("fatal error");
-		return 1;
-	}
-
-
-
-	userHead ->fileHead = (File_t*) malloc(sizeof(User_t));
-	if (userHead ->fileHead == NULL)
+	currentUserp = (User_t*) malloc(sizeof(User_t));	/*USE THIS AS THE INDEX???*/
+	if (currentUserp == NULL)
 	{
 		printf("fatal error");
 		return 1;
@@ -226,22 +223,16 @@ int main()
 
 
 
-	userHead ->fileHead->name[0] = '\0';
-	userHead ->fileHead->type[0] = '\0';
-	userHead ->fileHead->size = 0;
-/*	fileHead->date = date;
-*/	userHead ->fileHead->nextp = NULL;
-
 
 
 
 
 	/*Used to ensure checkUser works properly. May be unenccessary depending
 	how database file read function works*/
-	userHead -> status = 0;
+	userHeadp -> status = 0;
 
 	/*see if there are any users in program*/
-	check = checkUser(userHead);
+	check = checkUser(userHeadp);
 
 	/*If no users in database*/
 	if(check==0)
@@ -250,8 +241,9 @@ int main()
 		char name[MAX_USERNAME_SIZE], password[MAX_PASSWORD_SIZE];
 
 		/*Clear page*/
-		printf("\e[1;1H\e[2J");
+		clear();
 
+		/*Get user name and password*/
 		printf("This is your first time setting up. Please enter details withou"
 			"t spaces:\n");
 		printf("Enter username:\n");
@@ -260,23 +252,27 @@ int main()
 		scanf("%s", password);
 		printf("\n");
 
-		strcpy(userHead -> username, name);
-		strcpy(userHead -> password, password);
-		userHead -> status = 1;
-		userHead -> nextp = NULL;
+		/*Save username, password as the user LL head*/
+		strcpy(userHeadp -> username, name);
+		strcpy(userHeadp -> password, password);
+		userHeadp -> status = 1;
+
+		/*First file in the linked list will not be deleted*/
+		strcpy(userHeadp->fileHead ->name,"THIS_IS_A_PLACEHOLDERFILEwejfsd");
+		strcpy(userHeadp->fileHead ->type, "0");
+		userHeadp->fileHead ->size=0;
+		userHeadp->fileHead ->date.day=01;
+		userHeadp->fileHead ->date.month=01;
+		userHeadp->fileHead ->date.year=1900;
+		userHeadp->fileHead ->nextp = NULL;
 
 
-		#ifdef DEBUG
-			printf("DebugMain0\n");
-			printf("Details of first user:\n");
-			printf("name: %s, password %s, status %d", 
-				userHead -> username, userHead -> password, userHead -> status);
-			printf("DebugMainEnd\n");
 
-		#endif
+		userHeadp -> nextp = NULL;
+
 
 		/*confirm user is now created */
-		check = checkUser(userHead);
+		check = checkUser(userHeadp);
 	}
 
 
@@ -289,14 +285,11 @@ int main()
 			/*Default conditions*/
 			status=0;
 			choice=0;
-			subChoice=0;
 
 
 			/*Clear page*/
-			printf("\e[1;1H\e[2J");
+			clear();
 
-
-/*NEED TO GET the CURRENT USER OUT OF LOGIN SOMEHOW*/
 			/*Code for login or exitting the program*/
 			while(status==0)
 			{
@@ -318,8 +311,8 @@ int main()
 				{
 	
 					/*Clear screen*/
-					printf("\e[1;1H\e[2J");
-
+					clear();
+					
 					return 0;
 				}
 
@@ -336,13 +329,8 @@ int main()
 					scanf("%s", password);
 
 					/*status should be 0, 1, or 2*/
-					status = loginAuthentication(name, password, userHead);
-
-					#ifdef DEBUG
-						printf("DebugMain\n");
-						printf("status(normal login) = %d\n", status);
-
-					#endif
+					status = loginAuthentication(name, password, userHeadp);
+					currentUserp = getCurrentUser(name, userHeadp);
 
 				}
 
@@ -350,197 +338,343 @@ int main()
 				if(status==0)
 				{
 					printf("\nIncorrect username or password, please try again"
-						"\n\n\n");
+						"\n\n");
 				}
 		
 			}
+
+			/*clear screen*/
+			clear();
 
 
 			/*Admin User*/
 			if(status==1)
 			{
 
+				
+
 				/*Stay in admin account until logoff (choice==5)*/
 				while(choice!=5)
 				{
+					subChoice=0;
 
 					showMenu(status);
 					scanf("%d",&choice);
+					clear();
+
 					
-					/*Modify account*/
+
+					/*Modify own account*/
 					if(choice==1)
 					{
-						printf("Would you like to change your username or"
-						" password?\n"
-						"1 Change username (works but unelegant)\n"
-						"2 Change password (works but unelegatn)\n"
-						"3 Return to menu\n"
-						"IMPLEMENTATION is WIP\n"
-							);
-						scanf("%d", &subChoice);
 
-						if(subChoice==1)
+
+						/*functionalise below once makefile is working*/
+
+						while(subChoice!=4)
 						{
-							setUsername(userHead);
-							printf("your new username is ...\n");
-						}
-						else if(subChoice==2)
-						{
-							setPassword(userHead);
-							printf("your new password is ...\n");
+							/*get users choice*/
+							printf(
+							"Please choose an option:\n"
+							"1 Change username\n"
+							"2 Change password\n"
+							"WIP3 Delete  account\n"
+							"4 Return to menu\n"
+							"IMPLEMENTATION is WIP\n"
+								);
+							scanf("%d", &subChoice);
+							clear();
+
+							/*Change username*/
+							if(subChoice==1)
+							{
+								int success;
+								char name[MAX_USERNAME_SIZE], password[MAX_PASSWORD_SIZE];
 
 
-						}
+								/*Confirm user identity*/
+								printf("Please reenter your username:\n");
+								scanf("%s", name);
+								printf("Please reenter your password:\n");
+								scanf("%s", password);
 
-						else if(subChoice==3)
-						{
+								success = loginAuthentication(name, password, currentUserp);
+			
+								/*Alow user to change password if login correcty*/
+								if(success==(1||2))
+								{
+								setUsername(currentUserp);
+								printf("your new username is: %s\n",currentUserp->username);
+								}
 
-						}
+								else
+								{
+									printf("Incorrect username or password\n");
+								}
 
-						else
-						{
-							printf("Please enter a valid choice\n");
+							}
+
+							/*Change password*/
+							else if(subChoice==2)
+							{
+								int success;
+								char name[MAX_USERNAME_SIZE], password[MAX_PASSWORD_SIZE];
+
+
+								printf("Please reenter your username:\n");
+								scanf("%s", name);
+								printf("Please reenter your password:\n");
+								scanf("%s", password);
+
+
+								success = loginAuthentication(name, password, currentUserp);
+	
+								if(success==(1||2))
+								{
+								setPassword(currentUserp);
+								printf("your new password is: %s\n",currentUserp->password);
+								}
+
+								else
+								{
+									printf("Incorrect username or password\n");
+								}
+
+							}
+
+
+							/*DELETE account WIP*/
+							else if(subChoice==3)
+							{
+
+							}
+
+							if(subChoice==1||subChoice==2||subChoice==3)	
+							{	
+								printf("\n\n");
+							}
+
+							/*Return to menu*/
+							else if(subChoice==4)
+							{
+								clear();
+							}
+
+							else
+							{
+								clear();
+								printf("Please enter a valid choice\n");
+							}
+
 
 						}
 					}
 
 
-					/*Modify user account*/
+					/*Modify Other user's account*/
 					else if(choice==2)
 					{
 						while(subChoice!=6)
 						{	
-							printf("\n\nWhat would you like to do (enter a number)?\n"
-								"WIP1 View existing users\n"
-								"2 Create new user(works but unelegant)\n"
-								"3 Create new admin user(works but unelegant)\n"
+
+							/*WIP - create new user - returns int based on whether there was another user or not
+									print list 		- Need to include status 
+							*/
+							printf("What would you like to do (enter a number)?\n"
+								"1 View existing users\n"
+								"2 Create new user \n"
+								"3 Create new admin user\n"
 								"WIP4 Delete user\n"
 								"WIP5 Change user details\n"
 								"6 Return to menu\n"
 								"NOTE: IMPLEMENTATION IS WIP\n"
 								);
 							scanf("%d", &subChoice);
+							clear();
 
+							/*Display existing users */
 							if(subChoice==1)
 							{
 
-								printf("\n\nUsers are:\n");
-								displayUsers(userHead);
+								printf("Current users are:\n");
+								displayUsers(userHeadp);
 							}
 
 							/*create new user*/
 							else if(subChoice==2)
 							{
-								createNewUser(userHead, 2);
-	/*							printf("UNTESTD!!!!");
-	*/						}
+								int success = createNewUser(userHeadp, 2);
+								if (success==1)
+								{
+									printf("You have successfully created a new user.\n");
+								}
+			
+							
+							}
 
 							/*create new admin*/
 							else if(subChoice==3)
 							{
-								createNewUser(userHead, 1);
-	/*							printf("UNTESTD!!!!");
-	*/
-
+								int success = createNewUser(userHeadp, 1);
+								if (success==1)
+								{
+									printf("You have successfully created a new Admin.\n");
+								}
+								
 							}
 
+							/*Delete a user very WIP*/
 							else if(subChoice==4)
 							{
 
 							}
 
+							/*Modify another users details VERY Very WIP WIP*/
 							else if(subChoice==5)
 							{
 
 							}
 
+							if(subChoice==1||subChoice==2||subChoice==3||subChoice==4||subChoice==5)	
+							{	
+								printf("\n\n");
+							}
+
+							/*Return to menu*/
 							else if(subChoice==6)
 							{
-
+								clear();
 							}
 
 
 							else
 							{
+								clear();
 								printf("Please enter a valid choice\n");
 
 							}
 
-							/*if(subChoice==???),
-							View existing users
-							Make new user
-							Modify users etc...
 
 
 							
 
-							 */
+							
 						}
 					}
 
 					/*very WIP*/
-					/*encrypt/decrypt admin files*/
 					else if(choice==3)
 					{
-
-						printf("What would you like to do (enter a number)?\n"
-							"1 Add file\n"
-							"2 Delete file\n"
-							"WIP3 Encrypt file\n"
-							"WIP4 Decrypt file\n"
-							"WIP5 Compress file\n"
-							"WIP6 Decompress file\n"
-							"7 show all files\n"
-							"WIP8 SORT AND SEARCH IF TIME\n"
-							"9 Return to menu\n"
-							);
-						scanf("%d", &subChoice);
-
-						/*Dummy  variable for date*/
-						if(subChoice==1)
+						while(subChoice!=9)
 						{
+							printf(
+								"What would you like to do (enter a number)?\n"
+								"1 View all files\n"
+								"2 Add file\n"
+								"3 Delete file\n"
+								"WIP4 Encrypt file\n"
+								"WIP5 Decrypt file\n"
+								"WIP6 Compress file\n"
+								"WIP7 Decompress file\n"
+								"WIP8 SORT AND SEARCH IF TIME\n"
+								"9 Return to menu\n"
+								);
+							scanf("%d", &subChoice);
+							clear();
 
-						char name[MAX_FILENAME_SIZE], type[MAX_FILETYPE_SIZE];
-						date_t date2;
+							/*Dummy  variable for date WIPWIPWIP*/
 
-						printf("what is the file name");
-						scanf("%s", name);
-						printf("what is the file type");
-						scanf("%s", type);
 
-						
-						date2.day =01;
-						date2.month=1;
-						date2.year = 1900;
+							/*Display files*/
+							if(subChoice==1)
+							{
+								displayFiles(currentUserp->fileHead);
+							}
 
-						 
+							else if(subChoice==2)
+							{
 
-						addFile(userHead->fileHead, name, type, date2);
-						printf("ADDED FILE:\n");
-						printf("N: %s, T: %s", userHead->fileHead->name, 
-							userHead->fileHead->type);
-					
+								char name[MAX_FILENAME_SIZE], type[MAX_FILETYPE_SIZE];
+								date_t date2;
+								int success;
+
+								printf("what is the file name\n");
+								scanf("%s", name);
+								printf("what is the file type\n");
+								scanf("%s", type);
+
+								
+								date2.day =01;
+								date2.month=1;
+								date2.year = 1900;
+
+								 
+
+								success = addFile(currentUserp->fileHead, name, type, date2);
+
+								if(success==1)
+								{
+									printf("Successfully added file\n");
+								}
+								else
+								{
+									printf("Failed to add File. File may already be added,"
+										" or file may be owned by another user\n");
+								}
+
+							}
+
+							else if(subChoice==3)
+							{
+								char name[MAX_FILENAME_SIZE];
+								printf("what is the name of the file you want to delete?\n");
+								scanf("%s", name);
+
+								int success = deleteFile(currentUserp->fileHead, name);
+
+								if (success==0)
+								{
+									printf("You have successfully deleted your file.\n");
+								}
+								else
+								{
+									printf("File Deletion failed. Ensure you entered the correct name.\n");
+								}
+							}
+
+/*							else if()
+*/
+
+
+							if(subChoice==1||subChoice==2||subChoice==3||subChoice==4
+								||subChoice==5||subChoice==6||subChoice==7||subChoice==8)	
+							{
+								printf("\n\n");
+							}
+
+							/*Exit the loop*/
+							else if(subChoice==9)
+							{
+								clear();
+							}
+
+							else
+							{
+								clear();
+								printf("Please enter a valid choice\n");
+
+							}
+
+
+							
+
+
+
+
 						}
-
-						else if(subChoice==2)
-						{
-							char name[MAX_FILENAME_SIZE];
-							printf("what is the name of the file you want to delete?\n");
-							scanf("%s", name);
-
-							deleteFile(userHead->fileHead, name);
-						}
-
-
-						else if(subChoice==7)
-						{
-							displayFiles(userHead->fileHead);
-						}
-
-
 					}
 
-					/*encrypt/decrypt user files*/
+					/* VERY VERY VERY WIP encrypt/decrypt user files*/
 					else if(choice==4)
 					{
 						printf("What would you like to do? (enter a number)"
@@ -549,6 +683,46 @@ int main()
 							"WIP3 ..."
 							);
 						scanf("%d", &subChoice);
+						clear();
+
+						/*
+						while()
+						{
+							....
+
+
+
+
+
+							if(subChoice==1||subChoice==2||subChoice==3||subChoice==4
+								||subChoice==5|| ......)	
+							{
+								printf("\n\n");
+							}
+
+							/ *Exit the loop* /
+							else if(subChoice==9)
+							{
+								clear();
+							}
+
+							else
+							{
+								clear();
+								printf("Please enter a valid choice\n");
+
+							}
+
+
+
+
+						}
+						*/
+
+							
+							
+
+
 						
 					}
 
@@ -559,6 +733,7 @@ int main()
 					}
 					else
 					{
+						clear();
 						printf("Please enter a valid choice\n");
 					}
 				}
@@ -591,6 +766,7 @@ int main()
 					}
 					else
 					{
+						clear();
 						printf("Please enter a valid choice\n");
 					}
 				}					
@@ -617,6 +793,7 @@ int main()
 					}
 					else
 					{
+						clear();
 						printf("Please enter a valid choice\n");
 					}
 				}
@@ -814,14 +991,20 @@ displayFiles
 	none
 ***********************************************************/
 void displayFiles(File_t *headFilep){
-	File_t *currentp = headFilep;
+	/*First file is a placeholder*/
+	File_t *currentp = headFilep->nextp;
 	
 	if(currentp == NULL)
 		printf("THIS USER DOES NOT HAVE ANY FILES.\n");
 	else{
+
+			printf("%-10.10s %-10.10s %-12s %s\n", 
+				"Name", "Type",
+				"Date", "Size"
+			);
 		/*loop each element in the linked list until currentp is NULL*/
 		while(currentp != NULL){
-			printf("%-10.10s %-10.10s %02d-%02d-%04d %.3f\n", 
+			printf("%-10.10s %-10.10s %02d-%02d-%04d   %.3f\n", 
 				currentp->name, currentp->type,
 				currentp->date.day, currentp->date.month,
 				currentp->date.year, currentp->size
@@ -957,7 +1140,6 @@ int addFile(File_t* headFilep, char name[], char type[], date_t date){
 
 
 
-
 /*int showLoginMenu(void)
 {
 	int choice;
@@ -1049,14 +1231,14 @@ void showMenu(int userType){
 	
 	char* options = "Logged in as Administrator";
 	
-	printf("\e[1;1H\e[2J");
-
+/*	printf("\e[1;1H\e[2J");
+*/
 	if(userType == 1)
 	{
 	/*administrator*/
 		printf("%s \n\n", options);
 	printf("1. Modify Details\t\t2. Modify User Details\t\t3. Encrypt/Decrypt "
-		"\n4. Encrypt/Decrypt Users\t5. Exit\n");
+		"\n4. Encrypt/Decrypt Users\t5. Logout\n");
 
 	printf("\n");
 		
@@ -1066,7 +1248,7 @@ void showMenu(int userType){
 	/*standard user*/
 		options = "Logged in as standard user";
 		printf("%s \n\n", options);
-	printf("1. Modify Details\t\t2. Encrypt/Decrypt\t\t3. Exit\n");
+	printf("1. Modify Details\t\t2. Encrypt/Decrypt\t\t3. Logout\n");
 
 	printf("\n");
 		
@@ -1076,7 +1258,7 @@ void showMenu(int userType){
 		/*guest*/
 		options = "Logged in as guest";
 		printf("%s \n\n", options);
-	printf("1. Compress/Decompress\t\t2. Exit\n");
+	printf("1. Compress/Decompress\t\t2. Logout\n");
 
 	printf("\n");
 		
@@ -1113,22 +1295,82 @@ void setUsername(User_t *userp)
 
 
 
-User_t* createNewUser(User_t *userlistp, int status)
+int createNewUser(User_t *userlistp, int status)
 {
 	User_t* u = userlistp;
-	while(u->nextp != NULL)
-	{
-		u = u->nextp;
-	}
-	u->nextp = (User_t*) malloc(sizeof(User_t));
-	u = u->nextp;
-	printf("Enter desired username:\n");
-	scanf("%s", u->username);
-	printf("Enter desired password:\n");
-	scanf("%s",  u->password);
-	u->status = status;
+	char password[MAX_PASSWORD_SIZE];
+	char username[MAX_USERNAME_SIZE];
+	int check;
 
-	return u;
+
+	printf("Enter desired username:\n");
+	scanf("%s", username);
+
+	check = checkDuplicateUser(u, username);
+
+	if(check==1)
+	{
+
+		printf("That username is already taken. Please try again.\n");
+
+
+		/*duplicate username therefore failure*/
+		return 0;
+	}
+
+	else
+	{
+		printf("Enter desired password:\n");
+		scanf("%s", password);
+
+
+
+		while(u->nextp != NULL)
+		{
+			u = u->nextp;
+		}
+
+
+		u->nextp = (User_t*) malloc(sizeof(User_t));
+
+		if (u->nextp == NULL)
+		{
+			printf("A memory error has occurred, please try again\n");
+			return 0;
+		}
+
+		u = u->nextp;
+
+		strcpy(u->username, username);
+		strcpy(u->password, password);
+		u->status = status;
+		u->nextp = NULL;
+
+		/*initialise file LL*/
+		/*First file in the linked list will not be a placeholder*/
+/*		strcpy(u->fileHead->name,"THIS_IS_A_PLACEHOLDERFILEwejfsd");
+		strcpy(u->fileHead->type, "0");
+		u->fileHead ->size=0;
+		u->fileHead ->date.day=01;
+		u->fileHead ->date.month=01;
+		u->fileHead ->date.year=1900;
+		u->fileHead ->nextp = NULL;
+*/
+		/*SUCCESS*/
+		return 1;
+
+	}
+
+	
+
+/*int checkDuplicateUser(User_t *headUser, char name[]); / *worked*/
+
+
+
+
+
+
+	/*ADD DUPLICATE USERNAME CHECKING- duplicate leads to returning a 1. */
 }
 
 
@@ -1174,4 +1416,31 @@ char *getUsername(User_t* userp)
 	return usernamep;
 	
 	 
+}
+
+
+
+User_t* getCurrentUser(char* name, User_t* userHeadp)
+{
+	User_t* currentp = userHeadp;
+	while(currentp != NULL)
+	{
+		if(strcmp(currentp->username, name)==0)
+		{
+			return currentp;
+		}
+		else
+		{
+			currentp = currentp->nextp;
+		}
+	}
+
+	return currentp;
+}
+
+void clear()
+{
+	/*Clears the page*/
+	printf("\e[1;1H\e[2J");
+
 }
