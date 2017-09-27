@@ -1,71 +1,56 @@
 
-/*Currently 'log off' is effectively quitting the program
-Shouldn't be too hard to set it up so that log off prompts the user 
-to log in again (or exit)
-
-Need a way to return currentUser. Modify createNewUser, and modify login 
-authentication functions
-
-
-Function to check if their is an existing user
-
-current user
+/*
 
 
 WORKING
-	main fram working
-	change username + password
-	Add a file to the list
+	Can login
+	add new users
+	modify your own data
+	User info is preserved 
 
 
-NOT WORKING
-Hoang		modify change username/password setters to work with any user
-Hai			print file and user list			
+NOT WORKING/BUGS/TO DO
+	FILES!!
+		Can add files to the original user, can't add files to other users at all
+		duplicates only detected if own ll
+		CREATE NEW USER AND ADDING FILES
+
+			I think we should change it so files is a LL, with a property of 'user'
+	encryption
+	compression
+	delete your own account
+	change another users detail (eg admin changes a users detail)
+		require enter password again (see implementation for change own details)
+		use a tempuser?? in place of currentuser? (should be doable)
+	Delete another users account
+	sort and search
+	header files
+	database to store file information so it is preserved across logins
+	check if file is in the directory before allowing you to add it to the program
+	view user function 
+		Just need to display the status. 
+		Also, should it display the passwords of other admin???
+
+
+	
+
+JOBS for people to do
+Hai			print file list			
 James		check if the file is in the directory 	(if you can't open not in directory)
-James		modify print menu
-Huy			save the username and passsword to database
-Huy			read username and password to database
 Huy			save file list to database
 Huy			read file list from database
 Jonatan		Get make file and headers working
 Jonatan		Encryption 	
-
-
-
-
-
-TO DO FOR NEXT TIME
-Hai 	Delete user
-james 	change uesr details
-
-
-
-MAYBE
-	Add name to USER (+username)
-
-
-FUTURE
-	make password invisible??
-	require enter password to change user details
-	Password/username setters only work to change the first node, no matter what 
-		user tries to use them.
-	get current user out of the login authentication function.
-
-
-
+Hai 		Delete user
+james 		change uesr details
+				still worth doing??
 
 
 
 NOTES
-	Authenticate, allows any combo in the first time, after logging out doesn't 
-		allwo any combo in (not even correct one)
-	May need to change parameters of the File/make file function
+	May need to change parameters of the File/make file function and User
 	Can probably functionalise some of the options that are shared between admin
 		and user
-
-
-
-add current user
 
 
 */
@@ -94,6 +79,7 @@ add current user
 #define SIZE 10
 
 
+#define DB_FILE_NAME "DO_NOT_DELETE" 
 
 
 
@@ -180,6 +166,9 @@ User_t* getCurrentUser(char* name, User_t* userHeadp);
 
 void clear(void);
 
+int saveUserDatabase(User_t* userp);
+
+int readUserDatabase(User_t* userp);
 
 
 
@@ -222,14 +211,12 @@ int main(void)
 
 
 
-
-
-
-
-
 	/*Used to ensure checkUser works properly. May be unenccessary depending
 	how database file read function works*/
 	userHeadp -> status = 0;
+
+
+	readUserDatabase(userHeadp);
 
 	/*see if there are any users in program*/
 	check = checkUser(userHeadp);
@@ -313,6 +300,8 @@ int main(void)
 					/*Clear screen*/
 					clear();
 					
+					saveUserDatabase(userHeadp);
+
 					return 0;
 				}
 
@@ -1444,3 +1433,109 @@ void clear()
 	printf("\e[1;1H\e[2J");
 
 }
+
+
+
+
+
+
+
+
+/*
+ 
+*/
+int saveUserDatabase(User_t* userp)
+{
+	User_t *currentp = userp;
+	FILE* fp;
+
+	fp = fopen(DB_FILE_NAME, "w");
+
+	/*Error checking code, to determine if file opened succesfully*/
+	if (fp == NULL)
+	{
+		printf("Did not save database correctly\n");
+		return 0;
+	}
+	
+	while(currentp != NULL)
+	{
+		fprintf(fp, "%d %s %s\n", 
+			currentp->status,currentp->password, currentp->username);
+		currentp = currentp->nextp;
+	}
+
+	fprintf(fp, "0");
+
+	fclose(fp);
+
+	return 1;
+	
+}
+
+
+
+
+
+
+int readUserDatabase(User_t* userp)
+{
+
+	User_t *currentp = userp;
+
+	/*temp storage of status, test if file is empty*/
+	int check;
+
+
+	FILE* fp;
+	fp = fopen(DB_FILE_NAME, "r");
+
+	if (fp ==NULL)
+	{
+		return 0;
+	}
+
+	fscanf(fp, "%d %s %s\n", 
+				&currentp->status, currentp->password, currentp->username);
+
+
+	fscanf(fp, "%d", &check);
+
+	/*If there are more usernames*/
+	while(check!=0)
+	{
+
+		currentp->nextp = (User_t*) malloc(sizeof(User_t));
+
+		if (currentp->nextp == NULL)
+		{
+			printf("A memory error has occurred\n");
+			return 0;
+		}
+
+		/*increment LL*/
+		currentp=currentp->nextp;
+
+
+		currentp->status = check;
+
+		fscanf(fp, " %s %s\n", 
+				currentp->password, currentp->username);
+
+		fscanf(fp, "%d", &check);
+
+	}
+
+
+
+	currentp->nextp=NULL;
+	
+
+	
+
+	fclose(fp);
+
+	return 1;
+
+}
+
