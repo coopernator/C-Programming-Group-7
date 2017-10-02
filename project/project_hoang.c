@@ -33,7 +33,7 @@ char *getUsername(User_t* userp)
 	
 }
 
-void *getPassword(user_t* userp)
+void *getPassword(User_t* userp)
 {
 	int length;
 	length = strlen (userp->password);
