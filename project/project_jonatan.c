@@ -11,8 +11,8 @@ void showMenu(int userType)
 	{
 		/*administrator*/
 		printf("%s \n\n", options);
-		printf("1. Modify Details\t\t2. Modify User Details\t\t3. Encrypt/Decrypt "
-		"\n4. Encrypt/Decrypt Users\t5. Exit\n\n");		
+		printf("1. Modify Details\t\t2. Modify User Details\t\t"
+			"3. Encrypt/Decrypt \n4. Encrypt/Decrypt Users\t5. Exit\n\n");		
 	}
 	else if (userType == 2)
 	{

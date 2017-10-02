@@ -71,5 +71,7 @@ displayUsers - Hai
 ***********************************************************/
 void displayUsers(User_t *headUserp); /*worked*/
 
+/*hoang*/
+void *getPassword(user_t* userp)
 
 #endif
