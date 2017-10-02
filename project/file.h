@@ -4,6 +4,10 @@
 #define MAX_FILENAME_SIZE 21
 #define MAX_FILETYPE_SIZE 11
 #define MAX_OWNER_SIZE 21
+#include "user.h"
+
+#define len(x) ((int)log10(x)+1)
+
 struct File
 {
 	char name[MAX_FILENAME_SIZE];
@@ -13,6 +17,26 @@ struct File
 	struct File* nextp;
 };
 typedef struct File File_t;
+
+
+
+
+
+
+/* Node of the huffman tree */
+struct node{
+    int value;
+    char letter;
+    struct node *left,*right;
+};
+
+typedef struct node Node;
+
+/*
+input: mode 0 is edit own details
+		mode 1 is edit others details (for admins only)
+*/
+void modifyFileDetails(User_t* currentUserp, File_t* fileHeadp);
 
 /*hai*/
 char *getFileType(File_t *filep);
@@ -35,7 +59,7 @@ setFileName - Hai
 -Outputs:
 	+ added: return 1 if successfully deleted a file, 0 otherwise
 ***********************************************************/
-int setFileName(File_t *filep, File_t *headFilep);
+int setFileName(File_t *filep, File_t *fileheadp, char owner[]);
 
 File_t *searchFilename(File_t* head, char name[]);
 
@@ -50,7 +74,7 @@ addFile - Hai
 -Outputs:
 	+ added: return 1 if successfully added a new file, 0 otherwise
 ***********************************************************/
-int addFile(File_t* head, char name[], char type[]); /*worked*/
+int addFile(File_t* filehead, char owner[],char name[], char type[]);
 
 /**********************************************************
 deleteFile - Hai
@@ -73,7 +97,7 @@ checkDuplicateFile - Hai
 -Outputs:
 	+ check: 1 if there is a duplicate, 0 otherwise
 ***********************************************************/
-int checkDuplicateFile(File_t *headFile, char name[]); /*worked*/
+int checkDuplicateFile(File_t *headFile, char name[], char owner[]); 
 
 /**********************************************************
 displayFiles - Hai
@@ -83,7 +107,29 @@ displayFiles - Hai
 -Outputs:
 	none
 ***********************************************************/
-void displayFiles(File_t *headFilep); /*worked*/
+void displayFiles(File_t *filehead, char owner[]);
+
+
+
+/*******************************************************************************
+saveFileDatabase - James
+-This function saves the database linked list into a database to allow reuse
+-Inputs: 
+	+ File_t* filep: pointer to the head file of the file linked list
+-Outputs:
+	none
+*******************************************************************************/
+int saveFileDatabase(File_t* filep);
+
+/*******************************************************************************
+readFileDatabase - James
+-This function reads the database and saves (overwrites) it into the filep LL
+-Inputs: 
+	+ File_t* filep: pointer to the head file of the file linked list
+-Outputs:
+	none
+*******************************************************************************/
+int readFileDatabase(File_t* filep);
 
 
 /**************************************************************/
@@ -99,4 +145,19 @@ getFileName -Huy
 	+ namep: pointer to a string that contains the filename
 ***********************************************************/
 char *getFileName(File_t *filep);
+
+
+
+
+
+/*Hai's compression stuff*/
+void invertCodes(int codeTable[],int codeTable2[]);
+void decompressFile (FILE *input, FILE *output, Node *tree);
+void compressFile(FILE *input, FILE *output, int codeTable[]);
+void fillTable(int codeTable[], Node *tree, int Code);
+void buildHuffmanTree(Node **tree);
+int findSmaller (Node *array[], int differentFrom);
+void createHuffman(char filename[], int compress);
+
+
 #endif

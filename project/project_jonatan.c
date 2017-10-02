@@ -44,8 +44,8 @@ int encryptDecrypt(char* filename,  char* password)
 
 	FILE* original_filep = NULL;
 	FILE* encrypted_filep = NULL;
-	original_filep = fopen("test", "r");
-	encrypted_filep = fopen("encrypted", "w");
+	original_filep = fopen(filename, "r");
+	encrypted_filep = fopen("encrypted.txt", "w");
 
 	if(encrypted_filep==NULL)
 	{
@@ -55,7 +55,8 @@ int encryptDecrypt(char* filename,  char* password)
 
 	if(original_filep == NULL)
 	{
-		printf("Read error\n");
+		printf("Read error opening original file\n");
+		remove("encrypted.txt");
 		return 0;
 	}
 
@@ -70,7 +71,6 @@ int encryptDecrypt(char* filename,  char* password)
 
 	do
 	{
-
 		ch = fgetc(original_filep);
 		ciphertext = (char*) malloc(sizeof(char));
 		ciphertext[i] = password[i % key_length] ^ ch; 
@@ -78,7 +78,7 @@ int encryptDecrypt(char* filename,  char* password)
 		if(ch != EOF)
 		{
 			fprintf(encrypted_filep, "%c",ciphertext[i]);
-		
+			printf("ciphertext: %c\t", ciphertext[i] );
 			#ifdef DEBUG_MODE
 				printf("i: %d \t ch: %c \t password: %c \t ciphertext: %c\n",
 				 i, ch, password[i % key_length], ciphertext[i]);
@@ -93,28 +93,24 @@ int encryptDecrypt(char* filename,  char* password)
 				printf("end of file character reached\n");
 			#endif
 		}
-		
-		
 	}while(ch != EOF);
 
 	int removed;
 	removed = remove(filename);
-
-	if(removed == 1)
-	{
-		printf("file has been removed\n");
-	}
-	char* newname;
-	newname = strcat("_encrypted", filename);
-
-	int renamed;
-	renamed = rename(newname, filename);
-
-	if(renamed == 1)
-	{
-		printf("the file has been renamed\n");
-	}
 	
+	int renamed;
+	renamed = rename("encrypted.txt", filename);
+	
+	if(removed != 0)
+	{
+		printf("file test has not been removed\n");
+	}
+
+	if(renamed != 0)
+	{
+		printf("the file has not been renamed\n");
+	}
+
 	fclose(encrypted_filep);
 	return 1;
 } /*end encryptDecrypt*/

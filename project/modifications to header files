@@ -1,0 +1,42 @@
+modifications to header files
+
+int saveFileDatabase(File_t* filep)
+int readFileDatabase(File_t* filep)
+void modifyAccount(User_t* userHeadp, User_t* currentUserp, int mode)
+void modifyFileDetails(User_t* currentUserp, File_t* fileHeadp)
+User_t* copyUser(User_t* currentp)
+
+
+
+
+Things people need to change
+ - View existing users (function) to print status (admin or normal)
+ - make file to add a user section
+ - make add file add owner, also make add file check if file is in directory (try to open) before allowing you to ad it
+ -"displayFiles()" needs to change the heading to be prettier, and to add owner
+ - JONATAN - can you get rid of the clear page plsea
+
+
+ - Add status (encryptyed, compressed etc) to file??
+
+
+Functions people need to write
+ - Delete own user account
+ 	- given that there is an admin in the userpLL already
+
+ - File stuff
+
+
+
+WORK OUT HOW TO ALLOW CHARACTER ENTERING
+
+
+REPORT CRAP
+
+	only worked on mac not pc
+	login authenticate allowed accepting anything
+		change get current user to copy values, rather than just setting adresses equal
+		THEN it didn't actually change anything
+		So we set the adresses of the values as different, but that didn't work
+		ended up making two functions, one to copy, one to make actual current user
+	kept crashing when accidentally enter a non int, so turned it all into char

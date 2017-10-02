@@ -20,7 +20,6 @@ int loginAuthentication(char name[], char pass[], User_t* headp)
 	}
 
 	return check;
-
 }
 
 char *getUsername(User_t* userp)

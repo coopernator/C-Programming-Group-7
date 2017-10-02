@@ -10,8 +10,5 @@ void showMenu(int userType);
 void clear(void);
 
 /*jonatan*/
-int encryptDecrypt(char* filename, char* password);
-
-/*hoang??*/
-void help();
+int encryptDecrypt(char* filename,  char* password);
 #endif

@@ -21,5 +21,5 @@ project_hoang.o : project_hoang.c user.h
 project_jonatan.o : project_jonatan.c helper.h
 	$(CC) $(CFLAGS) -c -o project_jonatan.o project_jonatan.c
 
-clean:
+clean :
 	rm project_james.o project_huy.o project_hoang.o project_jonatan.o project_hai.o

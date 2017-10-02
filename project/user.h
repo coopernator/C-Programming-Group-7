@@ -17,6 +17,9 @@ struct User
 };
 typedef struct User User_t;
 
+/*james*/
+void modifyAccount(User_t* userHeadp, User_t* currentUserp, int mode);
+
 /*huy*/
 void setPassword(User_t *userp);
 /*huy*/
@@ -71,7 +74,8 @@ displayUsers - Hai
 ***********************************************************/
 void displayUsers(User_t *headUserp); /*worked*/
 
-/*hoang*/
-void *getPassword(user_t* userp)
+
+/*James*/
+User_t* copyUser(User_t* currentp);
 
 #endif
