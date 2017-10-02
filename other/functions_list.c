@@ -1,13 +1,13 @@
-date_t getDate(File_t *filep);
-char *getFileType(File_t *filep);
-int setFileName(File_t *filep, File_t *headFilep);
-File_t *searchFilename(File_t* head, char name[]);
-int addFile(File_t* fileHead, char name[], char type[], date_t date); /*worked*/
-int deleteFile(File_t *headFilep, char name[]); /*worked*/
-void displayUsers(User_t *headUserp); /*worked*/
-void displayFiles(File_t *headFilep); /*worked*/
-int checkDuplicateUser(User_t *headUser, char name[]); /*worked*/
-int checkDuplicateFile(File_t *headFile, char name[]); /*worked*/
+char *getFileName(File_t *filep);
+int setFileName(File_t *filep, File_t *fileheadp, char owner[]);
+File_t *searchFilename(File_t* head, char name[], char owner[]);
+User_t *searchUsername(User_t* head, char name[]);
+int addFile(File_t* filehead, char owner[],char name[], char type[]);
+int deleteFile(File_t *filehead, char name[], char owner[]);
+void displayUsers(User_t *headUserp); 
+void displayFiles(File_t *filehead, char owner[]); 
+int checkDuplicateUser(User_t *headUser, char name[]); 
+int checkDuplicateFile(File_t *headFile, char name[], char owner[]); 
 
 /*void printMenu(void);*/
 /*void help();*/
