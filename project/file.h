@@ -61,7 +61,7 @@ setFileName - Hai
 ***********************************************************/
 int setFileName(File_t *filep, File_t *fileheadp, char owner[]);
 
-File_t *searchFilename(File_t* head, char name[]);
+File_t *searchFilename(File_t* fileheadp, char name[], char owner[]);
 
 /**********************************************************
 addFile - Hai
@@ -85,7 +85,7 @@ deleteFile - Hai
 -Outputs:
 	+ added: return 1 if successfully deleted a file, 0 otherwise
 ***********************************************************/
-int deleteFile(File_t *headFilep, char name[]); /*worked*/
+int deleteFile(File_t *fileheadp, char name[], char owner[]);
 
 /**********************************************************
 checkDuplicateFile - Hai
