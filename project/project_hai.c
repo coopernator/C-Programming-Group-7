@@ -19,14 +19,14 @@ getFileName
 	+ *filep: pointer to the target file
 -Outputs:
 	+ namep: pointer to a string that contains the filename
-**********************************************************
+**********************************************************/
 char *getFileName(File_t *filep){
 	int len;
 	len  = strlen(filep->name);
 	char *namep =(char*) malloc(len + 1);
 	strcpy(namep, filep->name);
 	return namep;
-} getFileName*/
+}
 
 /**********************************************************
 addFile
@@ -62,15 +62,6 @@ int addFile(File_t* filehead, char owner[],char name[], char type[]){
 	return added;
 }
 
-
-char *getFileType(File_t *filep){
-	int len;
-	len  = strlen(filep->name);
-	char *typep =(char*) malloc(len + 1);
-	strcpy(typep, filep->name);
-	return typep;
-}
-
 int setFileName(File_t *filep, File_t *fileheadp, char owner[]){
 	char name[MAX_FILENAME_SIZE];
 	
@@ -87,16 +78,16 @@ int setFileName(File_t *filep, File_t *fileheadp, char owner[]){
 	return 0;
 }
 
-int deleteFile(File_t *headFilep, char name[]){ 
+int deleteFile(File_t *fileheadp, char name[], char owner[]){ 
 	File_t *foundp = NULL;
-	File_t *currentp = headFilep;
+	File_t *currentp = fileheadp;
 	
-	if(headFilep == NULL){
+	if(fileheadp->nextp == NULL){
 		printf("ERROR, THERE IS NO FILE TO DELETE.\n");
 		return 0;
 	}
 	
-	foundp = searchFilename(headFilep, name);
+	foundp = searchFilename(fileheadp, name, owner);
 	if(foundp == NULL){
 		printf("ERROR, FILE DOES NOT EXIST.\n");
 		return 0;
@@ -111,45 +102,58 @@ int deleteFile(File_t *headFilep, char name[]){
 	return 1;
 }
 
-File_t *searchFilename(File_t* headFilep, char name[]){
-	File_t *currentp = headFilep;
-	int check = 0;
+File_t *searchFilename(File_t* fileheadp, char name[], char owner[]){
+	File_t *currentp = fileheadp;
+	int numFile = 0;
+	
+	if(fileheadp->nextp == NULL){
+		printf("THERE IS NO FILE.");
+		return NULL;
+	}
 	
 	while( currentp != NULL ){
-		if(strcmp(currentp->name, name) == 0){
-			check =1;
+		if( (strcmp(currentp->name, name)==0 ) && (strcmp(currentp->owner, owner)==0) ){
+			numFile++;
 		}
 		else{
 			currentp = currentp->nextp;
 		}
-		
-		if(check)
-			break;
 	}
 	
-	return currentp;
+	while( currentp != NULL ){
+		if( (strcmp(currentp->name, name)==0 ) && (strcmp(currentp->owner, owner)==0) ){
+			return currentp;
+		}
+		else{
+			currentp = currentp->nextp;
+		}
+	}
+	
+	return NULL;
 }
 
-/*
-date_t getDate(File_t *filep){
-	date_t date;
-	
-	date.day = filep->date.day;
-	date.month = filep->date.month;
-	date.year = filep->date.year;
-	
-	return date;
-}*/
 
 void displayUsers(User_t *headUserp){
-	User_t *currentp = headUserp;
+	User_t *currentp = headUserp->nextp;
 	
-	if(currentp == NULL)
-		printf("THERE IS NO ACCOUNT IN THIS LINKED LIST.\n");
-	else{
-		while(currentp != NULL){
-			printf("%s\n", currentp->username);
-			currentp = currentp->nextp;
+	if(headUserp->status == 1){
+		if(currentp == NULL)
+		printf("FATAL ERROR!!! THERE IS NO ADMIN.\n");
+		else{
+			while(currentp != NULL){
+				printf("Name: %s, Status: %d.\n", currentp->username,currentp->status);
+				currentp = currentp->nextp;
+			}
+		}
+	}
+	else if(headUserp->status == 2){
+		if(currentp == NULL)
+		printf("THERE IS NO USER.\n");
+		else{
+			while(currentp != NULL){
+				printf("Name: %s, Status: %d.\n", currentp->username,currentp->status);
+				currentp = currentp->nextp;
+			}
 		}
 	}
 }
@@ -183,7 +187,7 @@ int checkDuplicateUser(User_t *headUserp, char name[]){
 			break;
 		}
 		currentp = currentp->nextp;
-	}	
+	}
 	return check;
 }
 
@@ -193,7 +197,7 @@ int checkDuplicateFile(File_t *filehead, char name[], char owner[]){
 	
 	/*loop each element in the linked list until currentp is NULL*/
 	while(currentp != NULL){
-		if( (strcmp(currentp->name, name)==0) && (strcmp(currentp->owner, owner)==0) ){
+		if( (strcmp(currentp->name, name)==0) ){
 			check = 1;
 			break;
 		}
@@ -272,7 +276,6 @@ void buildHuffmanTree(Node **tree){
 
     *tree = array[smallOne];
 
-return;
 }
 
 /* builds the table with the bits for each letter. 1 stands for binary 0 and 2 for binary 1 (used to facilitate arithmetic)*/
@@ -284,7 +287,6 @@ void fillTable(int codeTable[], Node *tree, int Code){
         fillTable(codeTable, tree->right, Code*10+2);
     }
 
-    return;
 }
 
 /*function to compress the input*/
@@ -368,7 +370,6 @@ void decompressFile (FILE *input, FILE *output, Node *tree){
         }
     }
 
-    return;
 }
 
 /*invert the codes in codeTable2 so they can be used with mod operator by compressFile function*/
@@ -385,12 +386,7 @@ void invertCodes(int codeTable[],int codeTable2[]){
         codeTable2[i]=copy;
     }
 
-return;
 }
-
-
-
-
 
 
 void createHuffman(char filename[], int compress){
