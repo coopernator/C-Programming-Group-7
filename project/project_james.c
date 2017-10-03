@@ -1017,7 +1017,7 @@ void modifyFileDetails(User_t* currentUserp, File_t* fileHeadp)
 				"want to delete?\n");
 			scanf("%s", name);
 
-			int success = deleteFile(fileHeadp, name);
+			int success = deleteFile(fileHeadp, name, "owner"); /*temporarily added owner*/
 
 			if (success==1)
 			{

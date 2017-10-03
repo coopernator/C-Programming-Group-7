@@ -20,13 +20,13 @@ getFileName
 -Outputs:
 	+ namep: pointer to a string that contains the filename
 **********************************************************/
-char *getFileName(File_t *filep){
+/*char *getFileName(File_t *filep){
 	int len;
 	len  = strlen(filep->name);
 	char *namep =(char*) malloc(len + 1);
 	strcpy(namep, filep->name);
 	return namep;
-}
+} already defined*/
 
 /**********************************************************
 addFile
