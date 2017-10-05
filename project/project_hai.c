@@ -104,7 +104,6 @@ int deleteFile(File_t *fileheadp, char name[], char owner[]){
 
 File_t *searchFilename(File_t* fileheadp, char name[], char owner[]){
 	File_t *currentp = fileheadp;
-	int numFile = 0;
 	
 	if(fileheadp->nextp == NULL){
 		printf("THERE IS NO FILE.");
