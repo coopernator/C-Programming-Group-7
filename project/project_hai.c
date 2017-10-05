@@ -154,7 +154,7 @@ void displayFiles(File_t *filehead, char owner[]){
 	File_t *temp = filehead;
 	int numFile = 0;
 	
-	while(temp =!NULL){
+	while(temp != NULL){
 		if(strcmp(temp->owner, owner)==0){
 			numFile++;
 		}
