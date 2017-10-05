@@ -113,15 +113,6 @@ File_t *searchFilename(File_t* fileheadp, char name[], char owner[]){
 	
 	while( currentp != NULL ){
 		if( (strcmp(currentp->name, name)==0 ) && (strcmp(currentp->owner, owner)==0) ){
-			numFile++;
-		}
-		else{
-			currentp = currentp->nextp;
-		}
-	}
-	
-	while( currentp != NULL ){
-		if( (strcmp(currentp->name, name)==0 ) && (strcmp(currentp->owner, owner)==0) ){
 			return currentp;
 		}
 		else{
@@ -160,9 +151,21 @@ void displayUsers(User_t *headUserp){
 
 void displayFiles(File_t *filehead, char owner[]){
 	File_t *currentp = filehead;
+	File_t *temp = filehead;
+	int numFile = 0;
+	
+	while(temp =!NULL){
+		if(strcmp(temp->owner, owner)==0){
+			numFile++;
+		}
+		temp = temp->nextp;
+	}
 	
 	if(currentp->nextp == NULL)
 		printf("THERE IS NO FILE.\n");
+	else if(numFile == 0){
+		printf("THIS USER HAS NO FILES.");
+	}
 	else{
 		/*loop each element in the linked list until currentp is NULL*/
 		while(currentp != NULL){
