@@ -141,6 +141,10 @@ int main()
 		fileHeadp ->size=0;
 		fileHeadp ->nextp = NULL;
 
+
+		saveUserDatabase(userHeadp);
+		saveFileDatabase(fileHeadp);
+
 		/*confirm user is now created */
 		check = checkUser(userHeadp);
 	}
@@ -179,9 +183,9 @@ int main()
 			if (! strcmp(name, "EXIT"))
 			{
 				/*Clear screen*/
-				clear();/*
+				clear();
 				saveUserDatabase(userHeadp);
-				saveFileDatabase(fileHeadp);*/
+				saveFileDatabase(fileHeadp);
 
 				return 0;
 			}
@@ -266,6 +270,12 @@ int main()
 							{
 								printf("You have successfully created"
 									" a new user.\n");
+
+								saveUserDatabase(userHeadp);
+							}
+							else
+							{
+								printf("ERROR");
 							}
 						}
 
@@ -277,6 +287,11 @@ int main()
 							{
 								printf("You have successfully created a "
 									"new Admin.\n");
+								saveUserDatabase(userHeadp);
+							}
+							else
+							{
+								printf("ERROR");
 							}
 						}
 
@@ -308,42 +323,52 @@ int main()
 								printf("\n\n");
 								printf("Users in the database are listed above."
 									"\nPlease the username of the user you wish"
-									" to modify:\n");
+									" to modify. If you wish to cancel, type"
+									" 'CANCEL' (in capitals)\n");
 								scanf("%s", name);
+
+
 
 								tempUserp = getCurrentUser(name, userHeadp);
 
 								/*Ensure that they are editting a valid user*/
-								while(tempUserp==NULL||tempUserp->status==1)
+								while((tempUserp==NULL||tempUserp->status==1)
+									&& (strcmp(name, "CANCEL")!=0))
 								{
 									clear();
 									
 									printf("Current users are:\n");
 									displayUsers(userHeadp);
 
+									/*Error message for no user selected*/
 									if(tempUserp==NULL)
 									{
 										printf("That username does not exist.\n"
-										"Please enter a (non-admin) username "
-										"from the options shown above\n");									}
+										"\nPlease enter a (non-admin) username "
+										"from the options shown above, or type"
+										" 'CANCEL'\n");									
+									}
 
+									/*Error mesage for editting an admin*/
 									else if(tempUserp->status==1)
 									{
-										printf("That is an admin.\n"
+										printf("That is an admin.\n\n"
 										"Please enter a (non-admin) username "
-										"from the options shown above\n");
+										"from the options shown above, or type"
+										" 'CANCEL'\n");
 									}
 									
 									scanf("%s", name);
 									tempUserp = getCurrentUser(name, userHeadp);
-
+									printf("\n");
 								}
 
 
-								/*Actually modify account*/
-								modifyAccount(userHeadp, tempUserp, 1);
-
-
+								if((strcmp(name, "CANCEL")!=0))
+								{
+									/*Actually modify account*/
+									modifyAccount(userHeadp, tempUserp, 1);
+								}
 
 							}
 
@@ -351,6 +376,9 @@ int main()
 							else
 							{
 								printf("incorrect username or password\n");
+
+								/*Prevent clear page, so above msg shown*/
+								subchoice='1';
 							}
 
 
@@ -439,6 +467,7 @@ int main()
 				if(choice=='1')
 				{
 					modifyAccount(userHeadp, currentUserp,0);
+
 
 				}			
 				/*encrypt/decrypt  files*/
@@ -728,7 +757,7 @@ int readFileDatabase(File_t* filep)
 	File_t *currentp = filep;
 
 	/*temp storage of status, test if file is empty*/
-	int check;
+	double check;
 
 
 	FILE *fp;
@@ -744,7 +773,7 @@ int readFileDatabase(File_t* filep)
 			&currentp->size, currentp->name, currentp->owner,currentp->type);
 
 
-	fscanf(fp, "%d", &check);
+	fscanf(fp, "%lf", &check);
 
 	/*If there are more filenames*/
 	while(check!=-1)
@@ -763,7 +792,7 @@ int readFileDatabase(File_t* filep)
 		fscanf(fp, " %s %s %s\n", 
 			currentp->name, currentp->owner, currentp->type);
 
-		fscanf(fp, "%d", &check);
+		fscanf(fp, "%lf", &check);
 	}
 
 
@@ -806,6 +835,8 @@ void modifyAccount(User_t* userHeadp, User_t* currentUserp, int mode)
 			char name[MAX_USERNAME_SIZE], 
 			password[MAX_PASSWORD_SIZE];
 
+			/*Mode 0 is for modifying own acct, else is modifying other accts*/
+
 
 			if(mode==0)
 			{
@@ -819,9 +850,9 @@ void modifyAccount(User_t* userHeadp, User_t* currentUserp, int mode)
 					copyUser(currentUserp));
 			}
 
-			else
+			else if(mode==1)
 			{
-				printf("Current username is: %s\n", currentUserp->password);
+				printf("Current username is: %s\n", currentUserp->username);
 				printf("Are you sure you want to change the username?\n");
 				printf("(Enter 'y' to confirm)\n");
 				scanf(" %c",&letter);
@@ -838,21 +869,22 @@ void modifyAccount(User_t* userHeadp, User_t* currentUserp, int mode)
 			}
 
 
-			/*Alow user to change password if login 
-					correctly*/
+			/*Alow username to be changed*/
 			if((success==1)||(success==2))
 			{
 				setUsername(currentUserp);
 				printf("New username is: %s\n",
 					currentUserp->username);
+				saveUserDatabase(userHeadp);
 			}
 
+			/*Do nothing for mode 1 if user cancels*/
 			else if(success==7)
 			{
 				;
 			}
 			
-
+			/*mode 0 error message*/
 			else
 			{
 				printf("Incorrect username or password\n");
@@ -878,7 +910,7 @@ void modifyAccount(User_t* userHeadp, User_t* currentUserp, int mode)
 
 			}
 
-			else 
+			else if(mode==1)
 			{
 				printf("Current password of user '%s' is: %s\n",
 					currentUserp->username, currentUserp->password);
@@ -899,9 +931,10 @@ void modifyAccount(User_t* userHeadp, User_t* currentUserp, int mode)
 
 			if((success==1)||(success==2))
 			{
-			setPassword(currentUserp);
-			printf("New password is: %s\n",
-				currentUserp->password);
+				setPassword(currentUserp);
+				printf("New password is: %s\n",
+					currentUserp->password);
+				saveUserDatabase(userHeadp);
 			}
 
 			else if(success==7)
@@ -919,15 +952,65 @@ void modifyAccount(User_t* userHeadp, User_t* currentUserp, int mode)
 		else if(subchoice=='3')
 		{
 
+			int success;
+			char name[MAX_USERNAME_SIZE], 
+				password[MAX_PASSWORD_SIZE];			
+
 			if (mode==0)
 			{
+				printf("Please reenter your username:\n");
+				scanf("%s", name);
+				printf("Please reenter your password:\n");
+				scanf("%s", password);
 
+				success = loginAuthentication(name, password, 
+				copyUser(currentUserp));
+			}
+
+			else if (mode==0)
+			{
+				printf("Are you sure you want to delete the user '%s'?\n",
+					currentUserp->username);
+				printf("(Enter 'y' to confirm)\n");
+				scanf(" %c",&letter);
+
+				if(letter=='y')
+				{
+					success=1;
+				}
+				else
+				{
+					success=7;
+				}
+			}
+
+
+			if((success==1)||(success==2))
+			{
+
+
+
+				/*dlete user function goes here*/
+
+
+
+				saveUserDatabase(userHeadp);
+			}
+
+			else if(success==7)
+			{
+				;
 			}
 
 			else
 			{
-
+				printf("Incorrect username or password\n");
 			}
+
+
+
+
+
 
 		}
 
@@ -981,19 +1064,22 @@ void modifyFileDetails(User_t* currentUserp, File_t* fileHeadp)
 		/*Display files*/
 		if(subchoice=='1')
 		{
+
+			printf("%-10.10s %-10.10s %-10.10s %.3s\n", 
+				"Owner", "Name", "Type", "Size");
+
 			displayFiles(fileHeadp, currentUserp->username);
 		}
 
 		else if(subchoice=='2')
 		{
 			char name[MAX_FILENAME_SIZE], 
-				type[MAX_FILETYPE_SIZE],
-				owner[MAX_USERNAME_SIZE];
+				type[MAX_FILETYPE_SIZE];
 			int success;
 
-			printf("what is the file name\n");
+			printf("What is the file name:\n");
 			scanf("%s", name);
-			printf("what is the file type\n");
+			printf("What is the file type\n");
 			scanf("%s", type);
 			
 
@@ -1002,6 +1088,7 @@ void modifyFileDetails(User_t* currentUserp, File_t* fileHeadp)
 			if(success==1)
 			{
 				printf("Successfully added file\n");
+				saveFileDatabase(fileHeadp);
 			}
 			else
 			{
@@ -1013,16 +1100,26 @@ void modifyFileDetails(User_t* currentUserp, File_t* fileHeadp)
 		else if(subchoice=='3')
 		{
 			char name[MAX_FILENAME_SIZE];
-			printf("what is the name of the file you "
-				"want to delete?\n");
-			scanf("%s", name);
+			char name1[MAX_FILENAME_SIZE];
 
-			int success = deleteFile(fileHeadp, name, "owner"); /*temporarily added owner*/
+
+			printf("Current files are listed below:\n");
+			printf("%-10.10s %-10.10s %-10.10s %.3s\n", 
+				"Owner", "Name", "Type", "Size");
+			displayFiles(fileHeadp, currentUserp->username);
+			printf("\n\n");
+
+			printf("what is the name of the file you want to delete?\n");
+			scanf("%s", name);
+			strcpy(name1, name);
+
+			int success = deleteFile(fileHeadp, name1, currentUserp->username); /*temporarily added owner*/
 
 			if (success==1)
 			{
 				printf("You have successfully deleted "
 					"your file.\n");
+				saveFileDatabase(fileHeadp);
 			}
 			else
 			{
@@ -1043,8 +1140,23 @@ void modifyFileDetails(User_t* currentUserp, File_t* fileHeadp)
 			encryptDecrypt(filename, password);*/
 
 			int encrypt_status = 0;
+			char name[MAX_FILENAME_SIZE];
 
-			encrypt_status = encryptDecrypt("apple.txt", "this_is_the_password");
+
+			printf("Current files are listed below:\n");
+			printf("%-10.10s %-10.10s %-10.10s %.3s\n", 
+				"Owner", "Name", "Type", "Size");
+			displayFiles(fileHeadp, currentUserp->username);
+			printf("\n\n");
+
+			printf("What file do you want to encrypt?\n");
+			scanf("%s", name);
+
+
+
+			encrypt_status = encryptDecrypt(name, "this_is_the_password");
+
+			clear();
 
 			if(encrypt_status > 0 ){
 				printf("successful encryption\n");
@@ -1063,8 +1175,25 @@ void modifyFileDetails(User_t* currentUserp, File_t* fileHeadp)
 			char password[MAX_PASSWORD_SIZE];
 			strcpy(password, "test");*/
 			int decrypt_status = 0;
+			char name[MAX_FILENAME_SIZE];
 
-			decrypt_status = encryptDecrypt("apple.txt", "this_is_the_password");
+
+	
+			printf("Current files are listed below:\n");
+			printf("%-10.10s %-10.10s %-10.10s %.3s\n", 
+				"Owner", "Name", "Type", "Size");
+			displayFiles(fileHeadp, currentUserp->username);
+			printf("\n\n");
+
+			printf("What file do you want to decrypt?\n");
+			scanf("%s", name);
+
+
+
+
+			decrypt_status = encryptDecrypt(name, "this_is_the_password");
+
+			clear();
 
 			if(decrypt_status > 0 ){
 				printf("successful decryption\n");
@@ -1076,7 +1205,22 @@ void modifyFileDetails(User_t* currentUserp, File_t* fileHeadp)
 		else if(subchoice=='6')
 		{
 			char filename[MAX_FILENAME_SIZE];
-			strcpy(filename, "a");
+
+
+
+
+			printf("Current files are listed below:\n");
+			printf("%-10.10s %-10.10s %-10.10s %.3s\n", 
+				"Owner", "Name", "Type", "Size");
+			displayFiles(fileHeadp, currentUserp->username);
+			printf("\n\n");
+
+			printf("What file do you want to compress?\n");
+			scanf("%s", filename);
+			printf("\n");
+
+
+
 
 			createHuffman(filename, 1);
 
@@ -1085,7 +1229,20 @@ void modifyFileDetails(User_t* currentUserp, File_t* fileHeadp)
 		else if(subchoice=='7')
 		{
 			char filename[MAX_FILENAME_SIZE];
-			strcpy(filename, "a.txt");
+
+
+
+
+			printf("Current files are listed below:\n");
+			printf("%-10.10s %-10.10s %-10.10s %.3s\n", 
+				"Owner", "Name", "Type", "Size");
+			displayFiles(fileHeadp, currentUserp->username);
+			printf("\n\n");
+
+			printf("What file do you want to compress?\n");
+			scanf("%s", filename);
+
+
 			createHuffman(filename, 0);
 
 		}
