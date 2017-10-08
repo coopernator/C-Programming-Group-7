@@ -151,13 +151,15 @@ char *getFileName(File_t *filep);
 
 
 /*Hai's compression stuff*/
-void invertCodes(int codeTable[],int codeTable2[]);
-void decompressFile (FILE *input, FILE *output, Node *tree);
-void compressFile(FILE *input, FILE *output, int codeTable[]);
-void fillTable(int codeTable[], Node *tree, int Code);
-void buildHuffmanTree(Node **tree);
-int findSmaller (Node *array[], int differentFrom);
-void createHuffman(char filename[], int compress);
+void invertCode(int codeTable[],int codeTable2[]);
+void decompress(FILE *inp, FILE *outp, node_t *treep);
+void compress(FILE *inp, FILE *outp, int binaryTable[]);
+void fill(int binaryTable[], node_t *treep, int Code);
+void buildTree(node_t **tree);
+int findSmaller (node_t *arr[], int differentFrom);
+void update(FILE *inp, FILE *outp);
+int compressHuffman(char filename[], int binaryTable[]);
+int decompressHuffman(char filename[], node_t *treep);
 
 
 #endif
