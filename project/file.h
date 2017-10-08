@@ -30,7 +30,7 @@ struct node{
     struct node *left,*right;
 };
 
-typedef struct node Node;
+typedef struct node node_t;
 
 /*
 input: mode 0 is edit own details
