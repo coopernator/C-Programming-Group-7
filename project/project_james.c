@@ -1065,7 +1065,7 @@ void modifyFileDetails(User_t* currentUserp, File_t* fileHeadp)
 		if(subchoice=='1')
 		{
 
-			printf("%-10.10s %-10.10s %-10.10s %.3s\n", 
+			printf("%-20.20s %-20.20s %-10.10s %.4s\n", 
 				"Owner", "Name", "Type", "Size");
 
 			displayFiles(fileHeadp, currentUserp->username);
@@ -1104,7 +1104,7 @@ void modifyFileDetails(User_t* currentUserp, File_t* fileHeadp)
 
 
 			printf("Current files are listed below:\n");
-			printf("%-10.10s %-10.10s %-10.10s %.3s\n", 
+			printf("%-20.20s %-20.20s %-10.10s %.4s\n", 
 				"Owner", "Name", "Type", "Size");
 			displayFiles(fileHeadp, currentUserp->username);
 			printf("\n\n");
@@ -1144,7 +1144,7 @@ void modifyFileDetails(User_t* currentUserp, File_t* fileHeadp)
 
 
 			printf("Current files are listed below:\n");
-			printf("%-10.10s %-10.10s %-10.10s %.3s\n", 
+			printf("%-20.20s %-20.20s %-10.10s %.4s\n", 
 				"Owner", "Name", "Type", "Size");
 			displayFiles(fileHeadp, currentUserp->username);
 			printf("\n\n");
@@ -1180,7 +1180,7 @@ void modifyFileDetails(User_t* currentUserp, File_t* fileHeadp)
 
 	
 			printf("Current files are listed below:\n");
-			printf("%-10.10s %-10.10s %-10.10s %.3s\n", 
+			printf("%-20.20s %-20.20s %-10.10s %.4s\n", 
 				"Owner", "Name", "Type", "Size");
 			displayFiles(fileHeadp, currentUserp->username);
 			printf("\n\n");
