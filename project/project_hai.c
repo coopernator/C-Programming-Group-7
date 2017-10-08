@@ -136,9 +136,9 @@ void displayUsers(User_t *headUserp){
 	}
 }
 
-void displayFiles(File_t *filehead, char owner[]){
-	File_t *currentp = filehead;
-	File_t *temp = filehead;
+void displayFiles(File_t *fileheadp, char owner[]){
+	File_t *currentp = fileheadp;
+	File_t *temp = fileheadp;
 	int numFile = 0;
 	
 	while(temp != NULL){
@@ -148,8 +148,9 @@ void displayFiles(File_t *filehead, char owner[]){
 		temp = temp->nextp;
 	}
 	
-	if(currentp->nextp == NULL)
+	if(currentp->nextp == NULL){
 		printf("THERE IS NO FILE IN DATABASE.\n");
+	}
 	else if(numFile == 0){
 		printf("THIS USER HAS NO FILES.");
 	}
@@ -174,6 +175,8 @@ int checkDuplicateUser(User_t *headUserp, char name[]){
 	while(currentp != NULL){
 		if(strcmp(currentp->username, name) == 0){
 			check = 1;
+			
+			/*if found a duplicate, break the loop*/
 			break;
 		}
 		currentp = currentp->nextp;
@@ -181,9 +184,9 @@ int checkDuplicateUser(User_t *headUserp, char name[]){
 	return check;
 }
 
-int checkDuplicateFile(File_t *filehead, char name[], char owner[]){
+int checkDuplicateFile(File_t *fileheadp, char name[], char owner[]){
 	int check = 0;
-	File_t *currentp = filehead;
+	File_t *currentp = fileheadp;
 	
 	/*loop each element in the linked list until currentp is NULL*/
 	while(currentp != NULL){
@@ -209,33 +212,35 @@ int checkDuplicateFile(File_t *filehead, char name[], char owner[]){
 
 
 
-/*finds and returns the small sub-tree*/
-int findSmaller (node_t *arr[], int differentFrom){
+/*looks for and returns the small sub-tree in the provided array*/
+int lookForSmaller(node_t *arr[],int differentFrom){
     int smaller, i = 0;
     
-    while (arr[i]->value==-1){
+    while (arr[i]->frequency == -1){
         i++;
 	}
 	
-    smaller=i;
+    smaller = i;
 	
-    if (i==differentFrom){
+    if (i == differentFrom){
         i++;
-        while (arr[i]->value==-1){
+        while (arr[i]->frequency == -1){
             i++;
 		}
 		
-        smaller=i;
+        smaller = i;
     }
 
-    for (i=1;i<27;i++){
-        if (arr[i]->value==-1){
+    for (i=1; i<27; i++){
+        if (arr[i]->frequency == -1){
             continue;
 		}
+		
         if (i==differentFrom){
             continue;
 		}
-        if (arr[i]->value < arr[smaller]->value){
+		
+        if (arr[i]->frequency < arr[smaller]->frequency){
             smaller = i;
 		}
     }
@@ -245,32 +250,33 @@ int findSmaller (node_t *arr[], int differentFrom){
 
 /*builds the huffman tree and returns its address by reference*/
 void buildTree(node_t **tree){
-	int frequencies [27] = {81, 15, 28, 43, 128, 23, 20, 61, 71, 2, 1, 40, 24, 69, 76, 20, 1, 61, 64, 91, 28, 10, 24, 1, 20, 1, 130};
+	int frequencies [frequencyArrLen] = {81, 15, 28, 43, 128, 23, 20, 61, 71, 2, 1, 40, 24, 69, 76, 20, 1, 61, 64, 91, 28, 10, 24, 1, 20, 1, 130};
     node_t *temp;
-    node_t *arr[27];
 	int smallOne,smallTwo;
-    int i, sub = 27;
+    node_t *arr[frequencyArrLen];
+    int i, subNum = frequencyArrLen;
     
 
-    for (i=0; i<27; i++){
+    for (i=0; i<frequencyArrLen; i++){
         arr[i] = malloc(sizeof(node_t));
 		arr[i]->right = NULL;
         arr[i]->left = NULL;
-		arr[i]->value = frequencies[i];
+		arr[i]->frequency = frequencies[i];
         arr[i]->letter = i;
     }
 
-    while (sub > 1){
-        smallOne=findSmaller(arr,-1);
-        smallTwo=findSmaller(arr,smallOne);
+	
+    while (subNum > 1){
+        smallOne = lookForSmaller(arr,-1);
+        smallTwo = lookForSmaller(arr,smallOne);
         temp = arr[smallOne];
         arr[smallOne] = malloc(sizeof(node_t));
-        arr[smallOne]->value = temp->value + arr[smallTwo]->value;
+        arr[smallOne]->frequency = temp->frequency + arr[smallTwo]->frequency;
         arr[smallOne]->letter = 127;
 		arr[smallOne]->right = temp;
         arr[smallOne]->left = arr[smallTwo];
-        arr[smallTwo]->value = -1;
-        sub--;
+        arr[smallTwo]->frequency = -1;
+        subNum--;
     }
 
     *tree = arr[smallOne];
@@ -278,8 +284,10 @@ void buildTree(node_t **tree){
 
 /* builds the table and assign the bit for each letter: 1 stands for binary 0 and 2 for binary 1*/
 void fill(int binaryTable[], node_t *treep, int binary){
-    if (treep->letter < 27)
+	
+    if (treep->letter < frequencyArrLen){
         binaryTable[(int)treep->letter] = binary;
+	}
     else{
         fill(binaryTable, treep->left, binary*10+1);
         fill(binaryTable, treep->right, binary*10+2);
@@ -289,16 +297,18 @@ void fill(int binaryTable[], node_t *treep, int binary){
 
 /*function to compress the input*/
 void compress(FILE *inp, FILE *outp, int binaryTable[]){
-    char bit, ch, x = 0;
-    int n, len, left = 8;
-    int original = 0, compressed = 0;
+    char ch, bit, a = 0;
+    int n, len;
+	int	left = 8;
+    int original = 0;
+	int compressed = 0;
 
     while ((ch=fgetc(inp)) != EOF){
         original++;
 		
         if (ch==32){
-			n = binaryTable[26];
-            len = len(binaryTable[26]);
+			n = binaryTable[frequencyArrLen-1];
+            len = len(binaryTable[frequencyArrLen-1]);
             
         }
         else{
@@ -312,23 +322,23 @@ void compress(FILE *inp, FILE *outp, int binaryTable[]){
             compressed++;
             bit = n%10 - 1;
             n = n/10;
-            x = x | bit;
+            a = a | bit;
 			len--;
             left--;
             
             if (left==0){
-                fputc(x, outp);
+                fputc(a, outp);
                 left = 8;
-				x = 0;
+				a = 0;
             }
 			
-            x = x << 1;
+            a = a << 1;
         }
     }
 
     if (left != 8){
-        x = x << (left - 1);
-        fputc(x, outp);
+        a = a << (left - 1);
+        fputc(a, outp);
     }
 
     printf("Originally, the file is: %d bits.\n", original*8);
@@ -350,13 +360,16 @@ void decompress (FILE *inp, FILE *outp, node_t *treep){
             ch = ch << 1;
             if (bit==0){
                 currentp = currentp->left;
+				
                 if (currentp->letter != 127){
+					
                     if (currentp->letter == 26){
                         fputc(32, outp);
 					}
                     else{
                         fputc(currentp->letter+97, outp);
 					}
+					
                     currentp = treep;
                 }
             }
