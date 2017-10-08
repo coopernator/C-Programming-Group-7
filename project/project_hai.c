@@ -6,27 +6,10 @@
 #include "file.h"
 #include "user.h"
 
-/*#define len(x) ((int)log10(x)+1)*/
-
-int englishLetterFrequencies [27] = {81, 15, 28, 43, 128, 23, 20, 61, 71, 2, 1, 40, 24, 69, 76, 20, 1, 61, 64, 91, 28, 10, 24, 1, 20, 1, 130};
+#define len(x) ((int)log10(x)+1)
 
 
 
-/**********************************************************
-getFileName
--This function returns the filename
--Inputs: 
-	+ *filep: pointer to the target file
--Outputs:
-	+ namep: pointer to a string that contains the filename
-**********************************************************/
-/*char *getFileName(File_t *filep){
-	int len;
-	len  = strlen(filep->name);
-	char *namep =(char*) malloc(len + 1);
-	strcpy(namep, filep->name);
-	return namep;
-} already defined*/
 
 /**********************************************************
 addFile
@@ -41,6 +24,7 @@ addFile
 ***********************************************************/
 int addFile(File_t* filehead, char owner[],char name[], char type[]){
 	File_t *currentp = filehead;
+	FILE *fp;
 	int added = 0;
 
 	/*loop each element in the linked list until nextp is NULL*/
@@ -57,6 +41,8 @@ int addFile(File_t* filehead, char owner[],char name[], char type[]){
 		strcpy(currentp->nextp->owner, owner);
 		currentp->nextp->size = 0;
 		currentp->nextp->nextp = NULL;
+		fp = fopen(name, "w");
+		fclose(fp);
 		added = 1;
 	}
 	return added;
@@ -96,6 +82,8 @@ int deleteFile(File_t *fileheadp, char name[], char owner[]){
 		while( strcmp(currentp->nextp->name, foundp->name) ){
 				currentp = currentp->nextp;
 		}
+		
+		remove(name);
 	}
 	
 	currentp->nextp = foundp->nextp;
@@ -161,7 +149,7 @@ void displayFiles(File_t *filehead, char owner[]){
 	}
 	
 	if(currentp->nextp == NULL)
-		printf("THERE IS NO FILE.\n");
+		printf("THERE IS NO FILE IN DATABASE.\n");
 	else if(numFile == 0){
 		printf("THIS USER HAS NO FILES.");
 	}
@@ -169,7 +157,7 @@ void displayFiles(File_t *filehead, char owner[]){
 		/*loop each element in the linked list until currentp is NULL*/
 		while(currentp != NULL){
 			if( strcmp(currentp->owner, owner)==0 ){
-				printf("%-10.10s %-10.10s %-10.10s %.3f\n", 
+				printf("%-20.20s %-20.20s %-10.10s %.3f\n", 
 					currentp->owner, currentp->name,
 					currentp->type, currentp->size);
 			}
@@ -221,193 +209,244 @@ int checkDuplicateFile(File_t *filehead, char name[], char owner[]){
 
 
 
-/*finds and returns the small sub-tree in the forrest*/
-int findSmaller (Node *array[], int differentFrom){
-    int smaller;
-    int i = 0;
-
-    while (array[i]->value==-1)
+/*finds and returns the small sub-tree*/
+int findSmaller (node_t *arr[], int differentFrom){
+    int smaller, i = 0;
+    
+    while (arr[i]->value==-1){
         i++;
+	}
+	
     smaller=i;
+	
     if (i==differentFrom){
         i++;
-        while (array[i]->value==-1)
+        while (arr[i]->value==-1){
             i++;
+		}
+		
         smaller=i;
     }
 
     for (i=1;i<27;i++){
-        if (array[i]->value==-1)
+        if (arr[i]->value==-1){
             continue;
-        if (i==differentFrom)
+		}
+        if (i==differentFrom){
             continue;
-        if (array[i]->value<array[smaller]->value)
+		}
+        if (arr[i]->value < arr[smaller]->value){
             smaller = i;
+		}
     }
 
     return smaller;
 }
 
 /*builds the huffman tree and returns its address by reference*/
-void buildHuffmanTree(Node **tree){
-    Node *temp;
-    Node *array[27];
-    int i, subTrees = 27;
-    int smallOne,smallTwo;
+void buildTree(node_t **tree){
+	int frequencies [27] = {81, 15, 28, 43, 128, 23, 20, 61, 71, 2, 1, 40, 24, 69, 76, 20, 1, 61, 64, 91, 28, 10, 24, 1, 20, 1, 130};
+    node_t *temp;
+    node_t *arr[27];
+	int smallOne,smallTwo;
+    int i, sub = 27;
+    
 
-    for (i=0;i<27;i++){
-        array[i] = malloc(sizeof(Node));
-        array[i]->value = englishLetterFrequencies[i];
-        array[i]->letter = i;
-        array[i]->left = NULL;
-        array[i]->right = NULL;
+    for (i=0; i<27; i++){
+        arr[i] = malloc(sizeof(node_t));
+		arr[i]->right = NULL;
+        arr[i]->left = NULL;
+		arr[i]->value = frequencies[i];
+        arr[i]->letter = i;
     }
 
-    while (subTrees>1){
-        smallOne=findSmaller(array,-1);
-        smallTwo=findSmaller(array,smallOne);
-        temp = array[smallOne];
-        array[smallOne] = malloc(sizeof(Node));
-        array[smallOne]->value=temp->value+array[smallTwo]->value;
-        array[smallOne]->letter=127;
-        array[smallOne]->left=array[smallTwo];
-        array[smallOne]->right=temp;
-        array[smallTwo]->value=-1;
-        subTrees--;
+    while (sub > 1){
+        smallOne=findSmaller(arr,-1);
+        smallTwo=findSmaller(arr,smallOne);
+        temp = arr[smallOne];
+        arr[smallOne] = malloc(sizeof(node_t));
+        arr[smallOne]->value = temp->value + arr[smallTwo]->value;
+        arr[smallOne]->letter = 127;
+		arr[smallOne]->right = temp;
+        arr[smallOne]->left = arr[smallTwo];
+        arr[smallTwo]->value = -1;
+        sub--;
     }
 
-    *tree = array[smallOne];
-
+    *tree = arr[smallOne];
 }
 
-/* builds the table with the bits for each letter. 1 stands for binary 0 and 2 for binary 1 (used to facilitate arithmetic)*/
-void fillTable(int codeTable[], Node *tree, int Code){
-    if (tree->letter<27)
-        codeTable[(int)tree->letter] = Code;
+/* builds the table and assign the bit for each letter: 1 stands for binary 0 and 2 for binary 1*/
+void fill(int binaryTable[], node_t *treep, int binary){
+    if (treep->letter < 27)
+        binaryTable[(int)treep->letter] = binary;
     else{
-        fillTable(codeTable, tree->left, Code*10+1);
-        fillTable(codeTable, tree->right, Code*10+2);
+        fill(binaryTable, treep->left, binary*10+1);
+        fill(binaryTable, treep->right, binary*10+2);
     }
 
 }
 
 /*function to compress the input*/
-void compressFile(FILE *input, FILE *output, int codeTable[]){
-    char bit, c, x = 0;
-    int n,length,bitsLeft = 8;
-    int originalBits = 0, compressedBits = 0;
+void compress(FILE *inp, FILE *outp, int binaryTable[]){
+    char bit, ch, x = 0;
+    int n, len, left = 8;
+    int original = 0, compressed = 0;
 
-    while ((c=fgetc(input))!=10){
-        originalBits++;
-        if (c==32){
-            length = len(codeTable[26]);
-            n = codeTable[26];
+    while ((ch=fgetc(inp)) != EOF){
+        original++;
+		
+        if (ch==32){
+			n = binaryTable[26];
+            len = len(binaryTable[26]);
+            
         }
         else{
-            length=len(codeTable[c-97]);
-            n = codeTable[c-97];
+			n = binaryTable[ch-97];
+            len = len(binaryTable[ch-97]);
+            
         }
 
-        while (length>0){
-            compressedBits++;
-            bit = n % 10 - 1;
-            n /= 10;
+        while (len>0){
+			
+            compressed++;
+            bit = n%10 - 1;
+            n = n/10;
             x = x | bit;
-            bitsLeft--;
-            length--;
-            if (bitsLeft==0){
-                fputc(x,output);
-                x = 0;
-                bitsLeft = 8;
+			len--;
+            left--;
+            
+            if (left==0){
+                fputc(x, outp);
+                left = 8;
+				x = 0;
             }
+			
             x = x << 1;
         }
     }
 
-    if (bitsLeft!=8){
-        x = x << (bitsLeft-1);
-        fputc(x,output);
+    if (left != 8){
+        x = x << (left - 1);
+        fputc(x, outp);
     }
 
-    /*print details of compression on the screen*/
-    fprintf(stderr,"Original bits = %dn",originalBits*8);
-    fprintf(stderr,"Compressed bits = %dn",compressedBits);
-    fprintf(stderr,"Saved %.2f%% of memoryn",((float)compressedBits/(originalBits*8))*100);
+    printf("Originally, the file is: %d bits.\n", original*8);
+    printf("After compressed, the file is: %d bits.\n", compressed);
+    printf("Saved %.2f%% of memory.\n", ((float)compressed/(original*8))*100);
 
 }
 
-/*function to decompress the input*/
-void decompressFile (FILE *input, FILE *output, Node *tree){
-    Node *current = tree;
-    char c,bit;
-    char mask = 1 << 7;
+void decompress (FILE *inp, FILE *outp, node_t *treep){
+    node_t *currentp = treep;
+    char sign = 1 << 7;
+	char ch, bit;
     int i;
 
-    while ((c=fgetc(input))!=EOF){
+    while ( (ch=fgetc(inp)) != EOF ){
 
-        for (i=0;i<8;i++){
-            bit = c & mask;
-            c = c << 1;
+        for (i=0; i<8; i++){
+            bit = ch & sign;
+            ch = ch << 1;
             if (bit==0){
-                current = current->left;
-                if (current->letter!=127){
-                    if (current->letter==26)
-                        fputc(32, output);
-                    else
-                        fputc(current->letter+97,output);
-                    current = tree;
+                currentp = currentp->left;
+                if (currentp->letter != 127){
+                    if (currentp->letter == 26){
+                        fputc(32, outp);
+					}
+                    else{
+                        fputc(currentp->letter+97, outp);
+					}
+                    currentp = treep;
                 }
             }
-
             else{
-                current = current->right;
-                if (current->letter!=127){
-                    if (current->letter==26)
-                        fputc(32, output);
-                    else
-                        fputc(current->letter+97,output);
-                    current = tree;
+                currentp = currentp->right;
+				
+                if (currentp->letter != 127){
+					
+                    if (currentp->letter == 26){
+                        fputc(32, outp);
+					}
+                    else{
+                        fputc(currentp->letter+97, outp);
+					}
+					
+                    currentp = treep;
                 }
             }
         }
     }
-
 }
 
-/*invert the codes in codeTable2 so they can be used with mod operator by compressFile function*/
-void invertCodes(int codeTable[],int codeTable2[]){
-    int i, n, copy;
 
-    for (i=0;i<27;i++){
-        n = codeTable[i];
-        copy = 0;
-        while (n>0){
-            copy = copy * 10 + n %10;
-            n /= 10;
+/*invert the codes in binaryTable2 so they can be used with mod operator by compressFile function*/
+void invertCode(int binaryTable[],int binaryTable2[]){
+    int i, num , temp;
+
+    for (i=0; i<27; i++){
+		temp = 0;
+        num = binaryTable[i];
+        
+        while (num > 0){
+            temp = temp*10 + num%10;
+            num = num/10;
         }
-        codeTable2[i]=copy;
+		
+        binaryTable2[i] = temp;
     }
 
 }
 
-
-void createHuffman(char filename[], int compress){
-Node *tree;
-    int codeTable[27], codeTable2[27];    
-    FILE *input, *output;
-
-    buildHuffmanTree(&tree);
-
-    fillTable(codeTable, tree, 0);
-
-    invertCodes(codeTable,codeTable2);
+void update(FILE *inp, FILE *outp){
+	int ch;
+	
+	for(ch = fgetc(inp); ch != EOF ; ch = fgetc(inp)){
+		fputc(ch, outp);
+	}
+	
+}
 
 
-    input = fopen(filename, "r");
-    output = fopen("output.txt","w");
+int compressHuffman(char filename[], int binaryTable[]){
+	
+    FILE *inp, *comp;
+	
+	
+    inp = fopen(filename, "r");
+	
+	if(inp == NULL){
+		printf("FILE INPUT ERROR.");
+		return 0;
+	}
+	else{
+		comp = fopen("compressed.txt","w");
+		compress(inp, comp, binaryTable);
+		fclose(comp);
+		fclose(inp);
 
-    if (compress==1)
-        compressFile(input,output,codeTable2);
-    else
-        decompressFile(input,output, tree);
+	}
+	
+	return 1;
+}
+
+int decompressHuffman(char filename[], node_t *treep){
+	
+    FILE *inp, *decomp;
+	
+    inp = fopen(filename, "r");
+	
+	if(inp == NULL){
+		printf("FILE INPUT ERROR.");
+		return 0;
+	}
+	else{
+		decomp = fopen("decompressed.txt","w");
+		decompress(inp, decomp, treep);
+		fclose(decomp);
+		fclose(inp);
+			
+	}
+	
+	return 1;
 } 
