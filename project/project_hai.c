@@ -424,6 +424,7 @@ void update(FILE *inp, FILE *outp){
 int compressHuffman(char filename[], int binaryTable[]){
 	
     FILE *inp, *comp;
+	int removed;
 	
 	
     inp = fopen(filename, "r");
@@ -435,8 +436,11 @@ int compressHuffman(char filename[], int binaryTable[]){
 	else{
 		comp = fopen("compressed.txt","w");
 		compress(inp, comp, binaryTable);
+		removed = remove(filename);
+		rename("compressed.txt", filename);
+		
+
 		fclose(comp);
-		fclose(inp);
 
 	}
 	
@@ -446,6 +450,7 @@ int compressHuffman(char filename[], int binaryTable[]){
 int decompressHuffman(char filename[], node_t *treep){
 	
     FILE *inp, *decomp;
+	int removed;
 	
     inp = fopen(filename, "r");
 	
@@ -456,8 +461,11 @@ int decompressHuffman(char filename[], node_t *treep){
 	else{
 		decomp = fopen("decompressed.txt","w");
 		decompress(inp, decomp, treep);
+		removed = remove(filename);
+		rename("decompressed.txt", filename);
+		
+
 		fclose(decomp);
-		fclose(inp);
 			
 	}
 	
