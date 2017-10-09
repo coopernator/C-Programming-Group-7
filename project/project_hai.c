@@ -170,12 +170,17 @@ void displayFiles(File_t *fileheadp, char owner[]){
 		printf("THIS USER HAS NO FILES.");
 	}
 	else{
+
+		printf("%-20.20s %-20.20s %-10.10s\n", 
+						"Owner", "Name", "Type");
+
+
 		/*loop each element in the linked list until currentp is NULL*/
 		while(currentp != NULL){
 			if( strcmp(currentp->owner, owner)==0 ){
-				printf("%-20.20s %-20.20s %-10.10s %.3f\n", 
+				printf("%-20.20s %-20.20s %-10.10s", 
 					currentp->owner, currentp->name,
-					currentp->type, currentp->size);
+					currentp->type);
 			}
 			currentp = currentp->nextp;
 		}
