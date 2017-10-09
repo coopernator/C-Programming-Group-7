@@ -428,15 +428,6 @@ void invertCode(int binaryTable[],int binaryTable2[]){
 
 }
 
-void update(FILE *inp, FILE *outp){
-	int ch;
-	
-	for(ch = fgetc(inp); ch != EOF ; ch = fgetc(inp)){
-		fputc(ch, outp);
-	}
-	
-}
-
 
 int compressHuffman(char filename[], int binaryTable[]){
 	
