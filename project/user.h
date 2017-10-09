@@ -27,7 +27,7 @@ void setPassword(User_t *userp);
 /*james*/
 int saveUserDatabase(User_t* userp);
 
-void setUsername(User_t *userp);
+int setUsername(User_t *userp, User_t *headUserp);
 /*huy*/
 int createNewUser(User_t *userlistp, int status);
 
