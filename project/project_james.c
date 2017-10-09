@@ -238,7 +238,10 @@ int main()
 				if(choice=='1')
 				{
 
-					modifyAccount(userHeadp, currentUserp, 0);
+					if(modifyAccount(userHeadp, currentUserp, 0)==1)
+					{
+						choice='5';
+					}
 					
 				}
 
@@ -370,7 +373,13 @@ int main()
 								if((strcmp(name, "CANCEL")!=0))
 								{
 									/*Actually modify account*/
-									modifyAccount(userHeadp, tempUserp, 1);
+									if(modifyAccount(userHeadp, tempUserp, 1)
+										==1)
+									{
+										subchoice='5';
+										strcpy(name, "CANCEL");
+
+									}
 								}
 
 							}
@@ -542,8 +551,10 @@ int main()
 				/*Modify account*/
 				if(choice=='1')
 				{
-					modifyAccount(userHeadp, currentUserp,0);
-
+					if(modifyAccount(userHeadp, currentUserp, 0)==1)
+					{
+						choice='3';
+					}
 
 				}			
 				/*encrypt/decrypt  files*/
@@ -885,7 +896,7 @@ int readFileDatabase(File_t* filep)
 
 *******************************************************************************/
 
-void modifyAccount(User_t* userHeadp, User_t* currentUserp, int mode)
+int modifyAccount(User_t* userHeadp, User_t* currentUserp, int mode)
 {
 	char subchoice='0';
 	char letter;
@@ -948,15 +959,10 @@ void modifyAccount(User_t* userHeadp, User_t* currentUserp, int mode)
 			/*Alow username to be changed*/
 			if((success==1)||(success==2))
 			{
-				int set;
-				
-				set = setUsername(currentUserp, userHeadp);
-				
-				if(set == 1){
-					printf("New username is: %s\n",
-						currentUserp->username);
-					saveUserDatabase(userHeadp);
-				}
+				setUsername(currentUserp);
+				printf("New username is: %s\n",
+					currentUserp->username);
+				saveUserDatabase(userHeadp);
 			}
 
 			/*Do nothing for mode 1 if user cancels*/
@@ -1078,12 +1084,13 @@ void modifyAccount(User_t* userHeadp, User_t* currentUserp, int mode)
 
 
 				saveUserDatabase(userHeadp);
+				return 1;
 			}
 
 			else if(success==7)
 			{
 				subchoice=4;
-				;
+	
 			}
 
 			else
@@ -1109,6 +1116,7 @@ void modifyAccount(User_t* userHeadp, User_t* currentUserp, int mode)
 		else if(subchoice=='4')
 		{
 			clear();
+			return 0;
 		}
 
 		else
@@ -1117,6 +1125,8 @@ void modifyAccount(User_t* userHeadp, User_t* currentUserp, int mode)
 			printf("Please enter a valid choice\n");
 		}
 	}
+
+	return 0;
 }
 
 /*******************************************************************************
