@@ -948,10 +948,15 @@ void modifyAccount(User_t* userHeadp, User_t* currentUserp, int mode)
 			/*Alow username to be changed*/
 			if((success==1)||(success==2))
 			{
-				setUsername(currentUserp);
-				printf("New username is: %s\n",
-					currentUserp->username);
-				saveUserDatabase(userHeadp);
+				int set;
+				
+				set = setUsername(currentUserp, userHeadp);
+				
+				if(set == 1){
+					printf("New username is: %s\n",
+						currentUserp->username);
+					saveUserDatabase(userHeadp);
+				}
 			}
 
 			/*Do nothing for mode 1 if user cancels*/
