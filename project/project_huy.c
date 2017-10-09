@@ -13,12 +13,21 @@ void setPassword(User_t *userp)
 }
 
 
-void setUsername(User_t *userp)
+int setUsername(User_t *userp, User_t *headUserp)
 {
+	int success = 0;
 	char user[USERNAME_SIZE];
 	printf("Enter your new username: ");
 	scanf("%s", user);
-	strcpy(userp->username, user);
+	if(checkDuplicateUser(headUserp, user) == 0){
+		strcpy(userp->username, user);
+		success = 1;
+	}
+	else{
+		printf("Username already exist.\n");
+	}
+	
+	return success;
 }
 
 int createNewUser(User_t *userlistp, int status)
