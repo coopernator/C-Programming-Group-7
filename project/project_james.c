@@ -34,14 +34,17 @@ NOTES
 	between admin and user
 */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <stdio.h>		/*printf, scanf, fopen, fclose, fprintf, fscanf*/
+#include <stdlib.h>		/*malloc*/
+#include <string.h>		/*strcpy, strcmp*/
 #include <math.h>
 
-#include "user.h"
-#include "file.h"
-#include "helper.h"
+#include "user.h"		/*User_t, modifyAccount, loginAuthentication, 
+getCurrentUser, displayUsers, createNewUser, readUserDatabase, saveUserDatabase,
+checkUser, copyUser, setUsername, setPassword */
+#include "file.h"		/*readFileDatabase, saveFileDatabase, modifyFileDetails,
+displayFiles, addFile, deleteFile, encryptDecrypt, createHuffman*/
+#include "helper.h"		/*showmenu, clear*/
 
 
 #define DB_FILE_NAME_USER "DB_user"
@@ -1065,8 +1068,6 @@ void modifyFileDetails(User_t* currentUserp, File_t* fileHeadp)
 		if(subchoice=='1')
 		{
 
-			printf("%-20.20s %-20.20s %-10.10s %.4s\n", 
-				"Owner", "Name", "Type", "Size");
 
 			displayFiles(fileHeadp, currentUserp->username);
 		}
@@ -1090,11 +1091,16 @@ void modifyFileDetails(User_t* currentUserp, File_t* fileHeadp)
 				printf("Successfully added file\n");
 				saveFileDatabase(fileHeadp);
 			}
-			else
+			else if (success==0)
 			{
 				printf("Failed to add File. File may "
 					"already be added, or file may be "
 					"owned by another user\n");
+			}
+			else if(success==2)
+			{
+				printf("Please add file to the directory, and"
+					" check name is correct");
 			}
 		}
 		else if(subchoice=='3')
@@ -1104,8 +1110,6 @@ void modifyFileDetails(User_t* currentUserp, File_t* fileHeadp)
 
 
 			printf("Current files are listed below:\n");
-			printf("%-20.20s %-20.20s %-10.10s %.4s\n", 
-				"Owner", "Name", "Type", "Size");
 			displayFiles(fileHeadp, currentUserp->username);
 			printf("\n\n");
 
@@ -1144,9 +1148,7 @@ void modifyFileDetails(User_t* currentUserp, File_t* fileHeadp)
 
 
 			printf("Current files are listed below:\n");
-			printf("%-20.20s %-20.20s %-10.10s %.4s\n", 
-				"Owner", "Name", "Type", "Size");
-			displayFiles(fileHeadp, currentUserp->username);
+						displayFiles(fileHeadp, currentUserp->username);
 			printf("\n\n");
 
 			printf("What file do you want to encrypt?\n");
@@ -1180,8 +1182,6 @@ void modifyFileDetails(User_t* currentUserp, File_t* fileHeadp)
 
 	
 			printf("Current files are listed below:\n");
-			printf("%-20.20s %-20.20s %-10.10s %.4s\n", 
-				"Owner", "Name", "Type", "Size");
 			displayFiles(fileHeadp, currentUserp->username);
 			printf("\n\n");
 
@@ -1201,8 +1201,7 @@ void modifyFileDetails(User_t* currentUserp, File_t* fileHeadp)
 				printf("unsuccessful decryption\n");
 			}
 		}
-
-		else if(subchoice=='6')
+				else if(subchoice=='6')
 		{
 			File_t * filep;
 			char filename[MAX_FILENAME_SIZE];
@@ -1274,8 +1273,6 @@ void modifyFileDetails(User_t* currentUserp, File_t* fileHeadp)
 			}
 
 		}
-
-
 		/*else if()*/
 		if(subchoice=='1'||subchoice=='2'||subchoice=='3'||
 			subchoice=='4'||subchoice=='5'||subchoice=='6'||
@@ -1295,3 +1292,4 @@ void modifyFileDetails(User_t* currentUserp, File_t* fileHeadp)
 		}
 	}
 }
+
