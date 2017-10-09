@@ -18,7 +18,7 @@ struct User
 typedef struct User User_t;
 
 /*james*/
-void modifyAccount(User_t* userHeadp, User_t* currentUserp, int mode);
+int modifyAccount(User_t* userHeadp, User_t* currentUserp, int mode);
 
 /*huy*/
 void setPassword(User_t *userp);
