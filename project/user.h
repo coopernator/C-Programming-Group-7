@@ -78,4 +78,10 @@ void displayUsers(User_t *headUserp); /*worked*/
 /*James*/
 User_t* copyUser(User_t* currentp);
 
+/*Hoang*/
+int deleteUser(User_t *userheadp, char name[]);
+User_t *searchUser(User_t* userheadp, char name[]);
+
+
+
 #endif

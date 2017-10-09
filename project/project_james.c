@@ -325,9 +325,9 @@ int main()
 
 								printf("\n\n");
 								printf("Users in the database are listed above."
-									"\nPlease the username of the user you wish"
-									" to modify. If you wish to cancel, type"
-									" 'CANCEL' (in capitals)\n");
+									"\nPlease enter the username of the user "
+									"you wish to modify. If you wish to cancel"
+									", type 'CANCEL' (in capitals)\n");
 								scanf("%s", name);
 
 
@@ -414,38 +414,111 @@ int main()
 				/* VERY VERY VERY WIP encrypt/decrypt user files*/
 				else if(choice=='4')
 				{
-					printf("What would you like to do? (enter a number)"
-						"WIP1 ..."
-						"WIP2 ..."
-						"WIP3 ..."
-						);
-					scanf(" %c", &subchoice);
-					clear();
+						
+					char name[MAX_USERNAME_SIZE], 
+					password[MAX_PASSWORD_SIZE];
 
-					/*
-					while()
+					/*Confirm Admin user identity*/
+					printf("Please reenter your username:\n");
+					scanf("%s", name);
+					printf("Please reenter your password:\n");
+					scanf("%s", password);
+
+					int success = loginAuthentication(name, password, 
+						copyUser(currentUserp));
+
+					/*Allow admin to edit*/
+					if (success==1)
 					{
-						....
+						clear();
 
-						if(subchoice=='1'||subchoice=='2'||subchoice=='3'||
-							subchoice=='4'||subchoice=='5'|| ......)	
-						{
-							printf("\n\n");
-						}
-						/ *Exit the loop* /
-						else if(subchoice=='9')
+						/*Admin seects user to edit*/
+						printf("Current users are:\n");
+						displayUsers(userHeadp);
+
+						printf("\n\n");
+						printf("Users in the database are listed above."
+								"\nPlease enter the username of the user "
+								"whose files you wish to edit."
+								" If you wish to cancel"
+								", type 'CANCEL' (in capitals)\n");
+						scanf("%s", name);
+
+
+
+						tempUserp = getCurrentUser(name, userHeadp);
+
+						/*Ensure that they are editting a valid user*/
+						while((tempUserp==NULL||tempUserp->status==1)
+							&& (strcmp(name, "CANCEL")!=0))
 						{
 							clear();
+							
+							printf("Current users are:\n");
+							displayUsers(userHeadp);
+
+							/*Error message for no user selected*/
+							if(tempUserp==NULL)
+							{
+								printf("That username does not exist.\n"
+								"\nPlease enter a (non-admin) username "
+								"from the options shown above, or type"
+								" 'CANCEL'\n");									
+							}
+
+							/*Error mesage for editting an admin*/
+							else if(tempUserp->status==1)
+							{
+								printf("That is an admin.\n\n"
+								"Please enter a (non-admin) username "
+								"from the options shown above, or type"
+								" 'CANCEL'\n");
+							}
+							
+							scanf("%s", name);
+							tempUserp = getCurrentUser(name, userHeadp);
+							printf("\n");
 						}
-						else
+
+
+						if((strcmp(name, "CANCEL")!=0))
 						{
 							clear();
-							printf("Please enter a valid choice\n");
-
+							/*Actually modify files*/
+							modifyFileDetails(tempUserp, fileHeadp);
 						}
+
 					}
-					*/	
+
+
+					else
+					{
+						printf("incorrect username or password\n");
+
+						/*Prevent clear page, so above msg shown*/
+						subchoice='1';
+					}
+
+					
+					if(subchoice=='1'||subchoice=='2'||
+						subchoice=='3')	
+					{	
+						printf("\n\n");
+					}
+					/*Return to menu*/
+					else if(subchoice=='5'||subchoice=='4')
+					{
+						clear();
+					}
+					else
+					{
+						clear();
+						printf("Please enter a valid choice\n");
+
+					}
+
 				}
+
 				/*Logout*/
 				else if(choice=='5')
 				{
@@ -970,10 +1043,11 @@ void modifyAccount(User_t* userHeadp, User_t* currentUserp, int mode)
 				copyUser(currentUserp));
 			}
 
-			else if (mode==0)
+			else if (mode==1)
 			{
 				printf("Are you sure you want to delete the user '%s'?\n",
 					currentUserp->username);
+				strcpy(name,currentUserp->username);
 				printf("(Enter 'y' to confirm)\n");
 				scanf(" %c",&letter);
 
@@ -995,6 +1069,7 @@ void modifyAccount(User_t* userHeadp, User_t* currentUserp, int mode)
 
 				/*dlete user function goes here*/
 
+				deleteUser(userHeadp, name);
 
 
 				saveUserDatabase(userHeadp);
@@ -1002,6 +1077,7 @@ void modifyAccount(User_t* userHeadp, User_t* currentUserp, int mode)
 
 			else if(success==7)
 			{
+				subchoice=4;
 				;
 			}
 
@@ -1201,7 +1277,9 @@ void modifyFileDetails(User_t* currentUserp, File_t* fileHeadp)
 				printf("unsuccessful decryption\n");
 			}
 		}
-				else if(subchoice=='6')
+		
+
+		else if(subchoice=='6')
 		{
 			File_t * filep;
 			char filename[MAX_FILENAME_SIZE];

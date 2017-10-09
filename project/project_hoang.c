@@ -42,10 +42,10 @@ void *getPassword(User_t* userp)
 	return passwordp;
 }
 
-int deleteUser(user_t *userheadp, char name[])
+int deleteUser(User_t *userheadp, char name[])
 {
-	user_t *foundp = NULL;
-	user_t *currentp = userheadp;
+	User_t *foundp = NULL;
+	User_t *currentp = userheadp;
 
 	if(userheadp->nextp == NULL)
 	{
@@ -70,9 +70,9 @@ int deleteUser(user_t *userheadp, char name[])
 	return 1;
 }
 
-user_t *searchUser(user_t* userheadp, char name[])
+User_t *searchUser(User_t* userheadp, char name[])
 {
-	user_t *currentp = userheadp;
+	User_t *currentp = userheadp;
 	
 	if(userheadp->nextp == NULL)
 	{
