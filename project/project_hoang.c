@@ -41,3 +41,56 @@ void *getPassword(User_t* userp)
 	strcpy(passwordp, userp->password);
 	return passwordp;
 }
+
+int deleteUser(user_t *userheadp, char name[])
+{
+	user_t *foundp = NULL;
+	user_t *currentp = userheadp;
+
+	if(userheadp->nextp == NULL)
+	{
+		printf("THERE IS NO USER TO DELETE\n");
+	}
+
+	foundp = searchUser(userheadp, name);
+	if(foundp == NULL)
+	{
+		printf("FILE DOES NOT EXIST\n");
+		return 0;
+	}
+	else
+	{
+		while( strcmp(currentp->nextp->username, foundp->username))
+		{
+				currentp = currentp->nextp;
+		}
+	}
+	
+	currentp->nextp = foundp->nextp;
+	return 1;
+}
+
+user_t *searchUser(user_t* userheadp, char name[])
+{
+	user_t *currentp = userheadp;
+	
+	if(userheadp->nextp == NULL)
+	{
+		printf("THERE IS NO FILE\n");
+		return NULL;
+	}
+	
+	while( currentp != NULL )
+	{
+		if( (strcmp(currentp->username, name)==0))
+		{
+			return currentp;
+		}
+		else
+		{
+			currentp = currentp->nextp;
+		}
+	}
+	
+	return NULL;
+}
