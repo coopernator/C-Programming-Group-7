@@ -27,7 +27,7 @@ typedef struct File File_t;
 
 /* Node of the huffman tree */
 struct node{
-    int value;
+    int frequency;
     char letter;
     struct node *left,*right;
 };
