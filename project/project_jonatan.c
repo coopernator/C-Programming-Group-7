@@ -78,8 +78,8 @@ int encryptDecrypt(char* filename,  char* password)
 		if(ch != EOF)
 		{
 			fprintf(encrypted_filep, "%c",ciphertext[i]);
-			printf("ciphertext: %c\t", ciphertext[i] );
 			#ifdef DEBUG_MODE
+				printf("ciphertext: %c\t", ciphertext[i] );
 				printf("i: %d \t ch: %c \t password: %c \t ciphertext: %c\n",
 				 i, ch, password[i % key_length], ciphertext[i]);
 			#endif
