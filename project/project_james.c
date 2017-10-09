@@ -34,17 +34,14 @@ NOTES
 	between admin and user
 */
 
-#include <stdio.h>		/*printf, scanf, fopen, fclose, fprintf, fscanf*/
-#include <stdlib.h>		/*malloc*/
-#include <string.h>		/*strcpy, strcmp*/
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <math.h>
 
-#include "user.h"		/*User_t, modifyAccount, loginAuthentication, 
-getCurrentUser, displayUsers, createNewUser, readUserDatabase, saveUserDatabase,
-checkUser, copyUser, setUsername, setPassword */
-#include "file.h"		/*readFileDatabase, saveFileDatabase, modifyFileDetails,
-displayFiles, addFile, deleteFile, encryptDecrypt, createHuffman*/
-#include "helper.h"		/*showmenu, clear*/
+#include "user.h"
+#include "file.h"
+#include "helper.h"
 
 
 #define DB_FILE_NAME_USER "DB_user"
@@ -1068,7 +1065,7 @@ void modifyFileDetails(User_t* currentUserp, File_t* fileHeadp)
 		if(subchoice=='1')
 		{
 
-			printf("%-10.10s %-10.10s %-10.10s %.3s\n", 
+			printf("%-20.20s %-20.20s %-10.10s %.4s\n", 
 				"Owner", "Name", "Type", "Size");
 
 			displayFiles(fileHeadp, currentUserp->username);
@@ -1107,7 +1104,7 @@ void modifyFileDetails(User_t* currentUserp, File_t* fileHeadp)
 
 
 			printf("Current files are listed below:\n");
-			printf("%-10.10s %-10.10s %-10.10s %.3s\n", 
+			printf("%-20.20s %-20.20s %-10.10s %.4s\n", 
 				"Owner", "Name", "Type", "Size");
 			displayFiles(fileHeadp, currentUserp->username);
 			printf("\n\n");
@@ -1147,7 +1144,7 @@ void modifyFileDetails(User_t* currentUserp, File_t* fileHeadp)
 
 
 			printf("Current files are listed below:\n");
-			printf("%-10.10s %-10.10s %-10.10s %.3s\n", 
+			printf("%-20.20s %-20.20s %-10.10s %.4s\n", 
 				"Owner", "Name", "Type", "Size");
 			displayFiles(fileHeadp, currentUserp->username);
 			printf("\n\n");
@@ -1183,7 +1180,7 @@ void modifyFileDetails(User_t* currentUserp, File_t* fileHeadp)
 
 	
 			printf("Current files are listed below:\n");
-			printf("%-10.10s %-10.10s %-10.10s %.3s\n", 
+			printf("%-20.20s %-20.20s %-10.10s %.4s\n", 
 				"Owner", "Name", "Type", "Size");
 			displayFiles(fileHeadp, currentUserp->username);
 			printf("\n\n");
@@ -1207,46 +1204,74 @@ void modifyFileDetails(User_t* currentUserp, File_t* fileHeadp)
 
 		else if(subchoice=='6')
 		{
+			File_t * filep;
 			char filename[MAX_FILENAME_SIZE];
-
-
-
-
-			printf("Current files are listed below:\n");
-			printf("%-10.10s %-10.10s %-10.10s %.3s\n", 
-				"Owner", "Name", "Type", "Size");
-			displayFiles(fileHeadp, currentUserp->username);
-			printf("\n\n");
-
-			printf("What file do you want to compress?\n");
+			char compressName[MAX_FILENAME_SIZE];
+			char type[MAX_FILETYPE_SIZE];
+			int check;
+			node_t *treep;
+			int binaryTable1[27], binaryTable2[27];    
+			
+			buildTree(&treep);
+			fill(binaryTable1, treep, 0);
+			invertCode(binaryTable1,binaryTable2);
+			
+			strcpy(compressName, "compressed.txt");
+			strcpy(type, "compressed");
+			printf("Please enter the name of the file you want to compress: ");
 			scanf("%s", filename);
-			printf("\n");
+			
+			filep = searchFilename(fileHeadp, filename, currentUserp->username);
 
-
-
-
-			createHuffman(filename, 1);
-
+			if(filep == NULL){
+				printf("ERROR, FILE NOT FOUND!!!");
+			}
+			else{
+				addFile(fileHeadp, currentUserp->username, compressName, type);
+				check = compressHuffman(filename, binaryTable2);
+				
+				if(check == 1){
+					printf("YOU HAVE SUCCESSFULLY COMPRESSED THE FILE.");
+				}
+				else{
+					printf("ERROR, UNSUCCESSFULLY COMPRESSED FILE.");
+				}
+			}
+			
 		}
 
 		else if(subchoice=='7')
 		{
+			File_t * filep;
 			char filename[MAX_FILENAME_SIZE];
-
-
-
-
-			printf("Current files are listed below:\n");
-			printf("%-10.10s %-10.10s %-10.10s %.3s\n", 
-				"Owner", "Name", "Type", "Size");
-			displayFiles(fileHeadp, currentUserp->username);
-			printf("\n\n");
-
-			printf("What file do you want to compress?\n");
+			char decompressName[MAX_FILENAME_SIZE];
+			char type[MAX_FILETYPE_SIZE];
+			int check;
+			node_t *treep; 
+			
+			buildTree(&treep);
+			
+			strcpy(decompressName, "decompressed.txt");
+			strcpy(type, "decompressed");
+			printf("Please enter the name of the file you want to decompress: ");
 			scanf("%s", filename);
+			
+			filep = searchFilename(fileHeadp, filename, currentUserp->username);
 
-
-			createHuffman(filename, 0);
+			if(filep == NULL){
+				printf("ERROR, FILE NOT FOUND!!!");
+			}
+			else{
+				addFile(fileHeadp, currentUserp->username, decompressName, type);
+				check = decompressHuffman(filename, treep);
+				
+				if(check == 1){
+					printf("YOU HAVE SUCCESSFULLY DECOMPRESSED THE FILE.");
+				}
+				else{
+					printf("ERROR, UNSUCCESSFULLY DECOMPRESSED FILE.");
+				}
+			}
 
 		}
 
@@ -1270,4 +1295,3 @@ void modifyFileDetails(User_t* currentUserp, File_t* fileHeadp)
 		}
 	}
 }
-
