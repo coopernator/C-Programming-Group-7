@@ -34,6 +34,21 @@ int addFile(File_t* filehead, char owner[],char name[], char type[]){
 	/*after the loop, currentp now points to the last 
 	element in the linked list*/
 	
+
+	/*Check file is in directory*/
+	fp = fopen(name, "r");
+	if (fp==NULL)
+	{
+		added=2;
+		fclose(fp);
+		return added;
+	}
+	else
+	{
+		fclose(fp);
+	}
+
+	/*Add file*/
 	if(checkDuplicateFile(filehead, name, owner) != 1){
 		currentp->nextp = (File_t*) malloc(sizeof(File_t));
 		strcpy(currentp->nextp->name, name);
@@ -204,9 +219,6 @@ int checkDuplicateFile(File_t *fileheadp, char name[], char owner[]){
 
 
 /*COMPRESSION STUFF
-
-
-
 */
 
 
@@ -449,7 +461,6 @@ int compressHuffman(char filename[], int binaryTable[]){
 int decompressHuffman(char filename[], node_t *treep){
 	
     FILE *inp, *decomp;
-	
 	
     inp = fopen(filename, "r");
 	
