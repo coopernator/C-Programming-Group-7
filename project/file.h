@@ -2,7 +2,7 @@
 #define FILE_HEADER
 
 #define MAX_FILENAME_SIZE 21
-#define MAX_FILETYPE_SIZE 11
+#define MAX_FILETYPE_SIZE 21
 #define MAX_OWNER_SIZE 21
 #define len(x) ((int)log10(x)+1)
 #define frequencyArrLen 27
