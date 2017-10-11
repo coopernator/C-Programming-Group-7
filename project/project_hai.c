@@ -36,7 +36,8 @@ int addFile(File_t* filehead, char owner[],char name[], char type[]){
 	
 
 	/*Check file is in directory*/
-	/*this bit seems to contain bugs*/
+	/*this bit seems to contain bugs
+	waiting for LAB test*/
 	/*
 	fp = fopen(name, "r");
 	if (fp==NULL)
