@@ -185,7 +185,7 @@ void displayFiles(File_t *fileheadp, char owner[]){
 		/*loop each element in the linked list until currentp is NULL*/
 		while(currentp != NULL){
 			if( strcmp(currentp->owner, owner)==0 ){
-				printf("%-20.20s %-20.20s %-10.10s", 
+				printf("%-20.20s %-20.20s %-10.10s\n", 
 					currentp->owner, currentp->name,
 					currentp->type);
 			}
