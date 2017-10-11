@@ -36,6 +36,8 @@ int addFile(File_t* filehead, char owner[],char name[], char type[]){
 	
 
 	/*Check file is in directory*/
+	/*this bit seems to contain bugs*/
+	/*
 	fp = fopen(name, "r");
 	if (fp==NULL)
 	{
@@ -43,10 +45,11 @@ int addFile(File_t* filehead, char owner[],char name[], char type[]){
 		fclose(fp);
 		return added;
 	}
-	else
-	{
+	else{
 		fclose(fp);
 	}
+	*/
+	
 
 	/*Add file*/
 	if(checkDuplicateFile(filehead, name, owner) != 1){
@@ -114,7 +117,8 @@ File_t *searchFilename(File_t* fileheadp, char name[], char owner[]){
 	}
 	
 	while( currentp != NULL ){
-		if( (strcmp(currentp->name, name)==0 ) && (strcmp(currentp->owner, owner)==0) ){
+		if( (strcmp(currentp->name, name)==0 ) 
+			&& (strcmp(currentp->owner, owner)==0) ){
 			return currentp;
 		}
 		else{
@@ -134,7 +138,8 @@ void displayUsers(User_t *headUserp){
 		printf("FATAL ERROR!!! THERE IS NO ADMIN.\n");
 		else{
 			while(currentp != NULL){
-				printf("Name: %s, Status: %d.\n", currentp->username,currentp->status);
+				printf("Name: %s, Status: %d.\n",
+				currentp->username,currentp->status);
 				currentp = currentp->nextp;
 			}
 		}
@@ -144,7 +149,8 @@ void displayUsers(User_t *headUserp){
 		printf("THERE IS NO USER.\n");
 		else{
 			while(currentp != NULL){
-				printf("Name: %s, Status: %d.\n", currentp->username,currentp->status);
+				printf("Name: %s, Status: %d.\n",
+				currentp->username,currentp->status);
 				currentp = currentp->nextp;
 			}
 		}
@@ -248,7 +254,7 @@ int lookForSmaller(node_t *arr[],int differentFrom){
         smaller = i;
     }
 
-    for (i=1; i<27; i++){
+    for (i=1; i<frequencyArrLen; i++){
         if (arr[i]->frequency == -1){
             continue;
 		}
@@ -267,13 +273,17 @@ int lookForSmaller(node_t *arr[],int differentFrom){
 
 /*builds the huffman tree and returns its address by reference*/
 void buildTree(node_t **tree){
-	int frequencies [frequencyArrLen] = {81, 15, 28, 43, 128, 23, 20, 61, 71, 2, 1, 40, 24, 69, 76, 20, 1, 61, 64, 91, 28, 10, 24, 1, 20, 1, 130};
+	
+	/*pre-defined frequency of the characters, source: Wikipedia*/
+	int frequencies [frequencyArrLen] = {81, 15, 28, 43, 128, 23, 20, 61,
+	71, 2, 1, 40, 24, 69, 76, 20, 1, 61, 64, 91, 28, 10, 24, 1, 20, 1, 130};
     node_t *temp;
 	int smallOne,smallTwo;
     node_t *arr[frequencyArrLen];
     int i, subNum = frequencyArrLen;
-    
 
+    
+	/*initialise the array arr[]*/
     for (i=0; i<frequencyArrLen; i++){
         arr[i] = malloc(sizeof(node_t));
 		arr[i]->right = NULL;
@@ -284,14 +294,25 @@ void buildTree(node_t **tree){
 
 	
     while (subNum > 1){
+
         smallOne = lookForSmaller(arr,-1);
         smallTwo = lookForSmaller(arr,smallOne);
+		
+		/*temp holds the pointer to the actual smallest node*/
         temp = arr[smallOne];
+		
         arr[smallOne] = malloc(sizeof(node_t));
+		
+		/*value of the parent node is the sum of the value of 2 child nodes*/
         arr[smallOne]->frequency = temp->frequency + arr[smallTwo]->frequency;
+		
+		/*the parent node does not have any letter, therefore it's 127 (DEL)*/
         arr[smallOne]->letter = 127;
 		arr[smallOne]->right = temp;
         arr[smallOne]->left = arr[smallTwo];
+		
+		/*the frequency of smallTwo is now -1 to indicate it has been used
+		so that wedont have to actually delete smallTwo from the array*/
         arr[smallTwo]->frequency = -1;
         subNum--;
     }
@@ -299,7 +320,8 @@ void buildTree(node_t **tree){
     *tree = arr[smallOne];
 }
 
-/* builds the table and assign the bit for each letter: 1 stands for binary 0 and 2 for binary 1*/
+/* builds the table and assign the bit for each letter: 
+1 stands for binary 0 and 2 for binary 1*/
 void fill(int binaryTable[], node_t *treep, int binary){
 	
     if (treep->letter < frequencyArrLen){
@@ -320,22 +342,23 @@ void compress(FILE *inp, FILE *outp, int binaryTable[]){
     int original = 0;
 	int compressed = 0;
 
+	/*loop the input file until 'end of file' is reached*/
     while ((ch=fgetc(inp)) != EOF){
         original++;
 		
-        if (ch==32){
+		/*handle spaces*/
+        if (ch == 32){
 			n = binaryTable[frequencyArrLen-1];
             len = len(binaryTable[frequencyArrLen-1]);
-            
         }
+		/*handle alphabet characters*/
         else{
 			n = binaryTable[ch-97];
             len = len(binaryTable[ch-97]);
-            
         }
 
-        while (len>0){
-			
+		/*do the compression*/
+        while (len > 0){
             compressed++;
             bit = n%10 - 1;
             n = n/10;
@@ -358,6 +381,8 @@ void compress(FILE *inp, FILE *outp, int binaryTable[]){
         fputc(a, outp);
     }
 
+	
+	/*print bit information*/
     printf("Originally, the file is: %d bits.\n", original*8);
     printf("After compressed, the file is: %d bits.\n", compressed);
     printf("Saved %.2f%% of memory.\n", ((float)compressed/(original*8))*100);
@@ -370,11 +395,13 @@ void decompress (FILE *inp, FILE *outp, node_t *treep){
 	char ch, bit;
     int i;
 
+	/*loop the input file until 'end of file' is reached*/
     while ( (ch=fgetc(inp)) != EOF ){
 
         for (i=0; i<8; i++){
             bit = ch & sign;
             ch = ch << 1;
+			
             if (bit==0){
                 currentp = currentp->left;
 				
@@ -410,7 +437,7 @@ void decompress (FILE *inp, FILE *outp, node_t *treep){
 }
 
 
-/*invert the codes in binaryTable2 so they can be used with mod operator by compressFile function*/
+/*invert the codes in binaryTable2 so they can be used with mod operator by 'compress' function*/
 void invertCode(int binaryTable[],int binaryTable2[]){
     int i, num , temp;
 
