@@ -85,13 +85,13 @@ int deleteUser(User_t *userheadp, char name[])
 
 	if(userheadp->nextp == NULL)
 	{
-		printf("THERE IS NO USER TO DELETE\n");
+		printf("THERE IS NO USER TO DELETE\n"); /*Display the message to show that there is no user to delete*/
 	}
 
 	foundp = searchUser(userheadp, name);
 	if(foundp == NULL)
 	{
-		printf("FILE DOES NOT EXIST\n");
+		printf("USER DOES NOT EXIST\n"); /*Display the error message that the user does not exist to delete*/
 		return 0;
 	}
 	else
@@ -106,22 +106,13 @@ int deleteUser(User_t *userheadp, char name[])
 	return 1;
 }
 
-/**********************************************************
-searchUser - Hoang
--This function allows to search the user by looking up the name
--Inputs: 
-	+ userheadp: the pointer to the head file of the linked list
-	+ name[]: the name we use to look for
--Outputs:
-	+ 
-***********************************************************/
 User_t *searchUser(User_t* userheadp, char name[])
 {
 	User_t *currentp = userheadp;
 	
 	if(userheadp->nextp == NULL)
 	{
-		printf("THERE IS NO FILE\n");
+		printf("THERE IS NO USER\n"); /*Display the message that there is no user*/
 		return NULL;
 	}
 	
