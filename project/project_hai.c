@@ -125,9 +125,23 @@ int deleteFile(File_t *fileheadp, char name[], char owner[]){
 	return 1;
 }
 
+
+/**********************************************************
+searchFilename - Hai
+-This function searches for a file in the database that
+has the same name and owner with the input 
+-Inputs: 
+	+ *fileheadp: pointer to the head file of the linked list
+	+ name[]: the name of the file you want to look for
+	+ owner[]: the owner og the file you want to look for
+-Outputs:
+	+ return a pointer to the match file; return NULL 
+	if cannot find the file or there is no file in the database
+***********************************************************/
 File_t *searchFilename(File_t* fileheadp, char name[], char owner[]){
 	File_t *currentp = fileheadp;
 	
+	/*check if the database is empty*/
 	if(fileheadp->nextp == NULL){
 		printf("THERE IS NO FILE.");
 		return NULL;
@@ -148,7 +162,7 @@ File_t *searchFilename(File_t* fileheadp, char name[], char owner[]){
 
 /**********************************************************
 displayUsers - Hai
--This function prints all existing users 
+-This function prints all existing users in the database
 -Inputs: 
 	+ *headUserp: pointer to the head user of the linked list
 -Outputs:
@@ -186,6 +200,7 @@ displayFiles - Hai
 -This function prints all files that a user has
 -Inputs: 
 	+ *headFilep: pointer to the head file of the linked list
+	+ owner[]: the owner of the displayed files 
 -Outputs:
 	none
 ***********************************************************/
@@ -356,6 +371,7 @@ void buildTree(node_t **tree){
     
 	/*initialise the array arr[]*/
     for (i=0; i<frequencyArrLen; i++){
+	    
         arr[i] = malloc(sizeof(node_t));
 		arr[i]->right = NULL;
         arr[i]->left = NULL;
@@ -408,8 +424,9 @@ void fill(int binaryTable[], node_t *treep, int binary){
         binaryTable[(int)treep->letter] = binary;
 	}
     else{
+	    fill(binaryTable, treep->right, binary*10+2);
         fill(binaryTable, treep->left, binary*10+1);
-        fill(binaryTable, treep->right, binary*10+2);
+        
     }
 
 }
@@ -437,13 +454,13 @@ void compress(FILE *inp, FILE *outp, int binaryTable[]){
 		
 		/*handle spaces*/
         if (ch == 32){
-		n = binaryTable[frequencyArrLen-1];
             len = len(binaryTable[frequencyArrLen-1]);
+		n = binaryTable[frequencyArrLen-1];
         }
 		/*handle alphabet characters*/
         else{
-		n = binaryTable[ch-97];
             len = len(binaryTable[ch-97]);
+		n = binaryTable[ch-97];
         }
 
 		/*do the compression*/
@@ -603,7 +620,7 @@ decompressHuffman - Hai
 -This function decompresses the input and produce output
 -Inputs: 
 	+ filename[]: the name of the file you want to compress
-	+ *treep: the tree containing the huffman mappingj
+	+ *treep: the tree containing the huffman mapping
 -Outputs:
 	+ 1 if success, 0 otherwise
 ***********************************************************/
