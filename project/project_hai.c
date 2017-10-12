@@ -8,9 +8,6 @@
 
 #define len(x) ((int)log10(x)+1)
 
-
-
-
 /**********************************************************
 addFile
 -This function adds a new file to a linked list

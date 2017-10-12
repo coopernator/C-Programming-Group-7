@@ -8,8 +8,6 @@
 #define frequencyArrLen 27
 #include "user.h"
 
-
-
 struct File
 {
 	char name[MAX_FILENAME_SIZE];
@@ -19,11 +17,6 @@ struct File
 	struct File* nextp;
 };
 typedef struct File File_t;
-
-
-
-
-
 
 /* Node of the huffman tree */
 struct node{
@@ -113,24 +106,24 @@ void displayFiles(File_t *filehead, char owner[]);
 
 
 
-/*******************************************************************************
+/*****************************************************************************
 saveFileDatabase - James
 -This function saves the database linked list into a database to allow reuse
 -Inputs: 
 	+ File_t* filep: pointer to the head file of the file linked list
 -Outputs:
 	none
-*******************************************************************************/
+*****************************************************************************/
 int saveFileDatabase(File_t* filep);
 
-/*******************************************************************************
+/*****************************************************************************
 readFileDatabase - James
 -This function reads the database and saves (overwrites) it into the filep LL
 -Inputs: 
 	+ File_t* filep: pointer to the head file of the file linked list
 -Outputs:
 	none
-*******************************************************************************/
+*****************************************************************************/
 int readFileDatabase(File_t* filep);
 
 
@@ -148,10 +141,6 @@ getFileName -Huy
 ***********************************************************/
 char *getFileName(File_t *filep);
 
-
-
-
-
 /*Hai's compression stuff*/
 void invertCode(int codeTable[],int codeTable2[]);
 void decompress(FILE *inp, FILE *outp, node_t *treep);
@@ -161,6 +150,5 @@ void buildTree(node_t **tree);
 int findSmaller (node_t *arr[], int differentFrom);
 int compressHuffman(char filename[], int binaryTable[]);
 int decompressHuffman(char filename[], node_t *treep);
-
 
 #endif
