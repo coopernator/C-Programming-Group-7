@@ -3,6 +3,17 @@
 #include <string.h>
 #include "user.h"
 
+/**********************************************************
+loginAuthentication - Hoang
+-This function checks if the user has already registered
+-Inputs: 
+	+ name[]: the name we use to look for 
+	+ pass[]: the password we use to look for
+	+ headp: pointer for the head file of the linked list
+
+-Outputs:
+	+ return check = 1 if the user is authenticated otherwise return check = 0.
+***********************************************************/
 int loginAuthentication(char name[], char pass[], User_t* headp)
 {
 	int check = 0;
@@ -22,6 +33,14 @@ int loginAuthentication(char name[], char pass[], User_t* headp)
 	return check;
 }
 
+/**********************************************************
+getUsername - Hoang
+-This function return the username of the user
+-Inputs: 
+	+ userp: pointer to the target username
+-Outputs:
+	+ usernamep: pointer to a string that contains the username
+***********************************************************/
 char *getUsername(User_t* userp)
 {
 	
@@ -33,6 +52,14 @@ char *getUsername(User_t* userp)
 	
 }
 
+/**********************************************************
+getUsername - Hoang
+-This function return the password of the user
+-Inputs: 
+	+ userp: pointer to the target password
+-Outputs:
+	+ passwordp: pointer to a string that contains the password
+***********************************************************/
 void *getPassword(User_t* userp)
 {
 	int length;
@@ -42,6 +69,15 @@ void *getPassword(User_t* userp)
 	return passwordp;
 }
 
+/**********************************************************
+deleteUser - Hoang
+-This function allows to delete the chosen user
+-Inputs: 
+	+ userheadp: pointer to the head file of the linked list
+	+ name[]: the name we use to look for
+-Outputs:
+	+ return check = 1 if the user is successfully deleted, otherwise return check = 0.
+***********************************************************/
 int deleteUser(User_t *userheadp, char name[])
 {
 	User_t *foundp = NULL;
@@ -70,6 +106,15 @@ int deleteUser(User_t *userheadp, char name[])
 	return 1;
 }
 
+/**********************************************************
+searchUser - Hoang
+-This function allows to search the user by looking up the name
+-Inputs: 
+	+ userheadp: the pointer to the head file of the linked list
+	+ name[]: the name we use to look for
+-Outputs:
+	+ 
+***********************************************************/
 User_t *searchUser(User_t* userheadp, char name[])
 {
 	User_t *currentp = userheadp;
