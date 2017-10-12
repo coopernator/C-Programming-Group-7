@@ -83,5 +83,8 @@ int deleteUser(User_t *userheadp, char name[]);
 User_t *searchUser(User_t* userheadp, char name[]);
 
 
+int confirmLogin(User_t* currentUserp);
+
+
 
 #endif
