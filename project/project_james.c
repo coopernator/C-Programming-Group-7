@@ -1122,8 +1122,6 @@ void modifyFileDetails(User_t* currentUserp, File_t* fileHeadp)
 		{
 			File_t * filep;
 			char filename[MAX_FILENAME_SIZE];
-			char compressName[MAX_FILENAME_SIZE];
-			char type[MAX_FILETYPE_SIZE];
 			int check;
 			node_t *treep;
 			int binaryTable1[27], binaryTable2[27];    
@@ -1132,8 +1130,6 @@ void modifyFileDetails(User_t* currentUserp, File_t* fileHeadp)
 			fill(binaryTable1, treep, 0);
 			invertCode(binaryTable1,binaryTable2);
 			
-			strcpy(compressName, "compressed.txt");
-			strcpy(type, "compressed");
 			printf("Please enter the name of the file you want to compress: ");
 			scanf("%s", filename);
 			
@@ -1143,7 +1139,6 @@ void modifyFileDetails(User_t* currentUserp, File_t* fileHeadp)
 				printf("ERROR, FILE NOT FOUND!!!");
 			}
 			else{
-				addFile(fileHeadp, currentUserp->username, compressName, type);
 				check = compressHuffman(filename, binaryTable2);
 				
 				if(check == 1){
@@ -1160,8 +1155,6 @@ void modifyFileDetails(User_t* currentUserp, File_t* fileHeadp)
 		{
 			File_t * filep;
 			char filename[MAX_FILENAME_SIZE];
-			char decompressName[MAX_FILENAME_SIZE];
-			char type[MAX_FILETYPE_SIZE];
 			int check;
 			node_t *treep; 
 			
