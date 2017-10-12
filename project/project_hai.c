@@ -9,13 +9,13 @@
 #define len(x) ((int)log10(x)+1)
 
 /**********************************************************
-addFile
+addFile - Hai
 -This function adds a new file to a linked list
 -Inputs: 
-	+ *filehead: pointer to the head file of the linked list
+	+ *headFilep: pointer to the head file of the linked list
+	+ onwer[]: owner of the file
 	+ name[]: name of the new file
 	+ type[]: type of the new file
-	+ date: date of the new file
 -Outputs:
 	+ added: return 1 if successfully added a new file, 0 otherwise
 ***********************************************************/
@@ -64,6 +64,16 @@ int addFile(File_t* filehead, char owner[],char name[], char type[]){
 	return added;
 }
 
+/**********************************************************
+setFileName - Hai
+-This function allows user to make change to filename
+-Inputs: 
+	+ *filep: pointer to the target file
+	+ *headFilep: pointer to the head file of the linked list
+	   where 'filep' belongs to
+-Outputs:
+	+ added: return 1 if successfully deleted a file, 0 otherwise
+***********************************************************/
 int setFileName(File_t *filep, File_t *fileheadp, char owner[]){
 	char name[MAX_FILENAME_SIZE];
 	
@@ -80,6 +90,15 @@ int setFileName(File_t *filep, File_t *fileheadp, char owner[]){
 	return 0;
 }
 
+/**********************************************************
+deleteFile - Hai
+-This function deletes a file in a linked list by its name
+-Inputs: 
+	+ *headFilep: pointer to the head file of the linked list
+	+ name[]: name of the file we want to delete
+-Outputs:
+	+ added: return 1 if successfully deleted a file, 0 otherwise
+***********************************************************/
 int deleteFile(File_t *fileheadp, char name[], char owner[]){ 
 	File_t *foundp = NULL;
 	File_t *currentp = fileheadp;
@@ -127,7 +146,14 @@ File_t *searchFilename(File_t* fileheadp, char name[], char owner[]){
 	return NULL;
 }
 
-
+/**********************************************************
+displayUsers - Hai
+-This function prints all existing users 
+-Inputs: 
+	+ *headUserp: pointer to the head user of the linked list
+-Outputs:
+	none
+***********************************************************/
 void displayUsers(User_t *headUserp){
 	User_t *currentp = headUserp->nextp;
 	
@@ -155,6 +181,14 @@ void displayUsers(User_t *headUserp){
 	}
 }
 
+/**********************************************************
+displayFiles - Hai
+-This function prints all files that a user has
+-Inputs: 
+	+ *headFilep: pointer to the head file of the linked list
+-Outputs:
+	none
+***********************************************************/
 void displayFiles(File_t *fileheadp, char owner[]){
 	File_t *currentp = fileheadp;
 	File_t *temp = fileheadp;
@@ -191,6 +225,16 @@ void displayFiles(File_t *fileheadp, char owner[]){
 	}
 }
 
+/**********************************************************
+checkDuplicateUser - Hai
+-This function checks if there is any existing 
+user that has the same name
+-Inputs: 
+	+ *headUserp: pointer to the head user of the linked list
+	+ name[]: the input name you want to check for duplicate
+-Outputs:
+	+ int check: return 1 if there is a duplicate, 0 otherwise
+***********************************************************/
 int checkDuplicateUser(User_t *headUserp, char name[]){
 	int check = 0;
 	User_t *currentp = headUserp;
@@ -208,6 +252,18 @@ int checkDuplicateUser(User_t *headUserp, char name[]){
 	return check;
 }
 
+
+/**********************************************************
+checkDuplicateFile - Hai
+-This function checks if there is any duplicate file 
+(have the same name and owner) in the provided linkedlist
+-Inputs: 
+	+ *headFilep: pointer to the head file of the linked list
+	+ name[]: the name we use to look for duplicates
+	+ owner[]: the name of the owner of the file
+-Outputs:
+	+ check: 1 if there is a duplicate, 0 otherwise
+***********************************************************/
 int checkDuplicateFile(File_t *fileheadp, char name[], char owner[]){
 	int check = 0;
 	File_t *currentp = fileheadp;
@@ -231,9 +287,18 @@ int checkDuplicateFile(File_t *fileheadp, char name[], char owner[]){
 */
 
 
-
-
-/*looks for and returns the small sub-tree in the provided array*/
+/**********************************************************
+lookForSmaller - Hai
+-This function looks for and returns the 
+small sub-tree in the provided array 
+(have the same name and owner) in the provided linkedlist
+-Inputs: 
+	+ *arr[]: the array containing the frequencies of the characters
+	+ differentFrom: an interger indicating the frequency we want to avoid
+	(if the frequency is -1, the character has already been used)
+-Outputs:
+	+ smaller: the index number of the smallest frequency in the array
+***********************************************************/
 int lookForSmaller(node_t *arr[],int differentFrom){
     int smaller, i = 0;
     
@@ -269,7 +334,15 @@ int lookForSmaller(node_t *arr[],int differentFrom){
     return smaller;
 }
 
-/*builds the huffman tree and returns its address by reference*/
+/**********************************************************
+buildTree - Hai
+-This function construct the huffman tree
+ and returns its address by reference
+-Inputs: 
+	+ **tree: the pointer to the tree
+-Outputs:
+	none
+***********************************************************/
 void buildTree(node_t **tree){
 	
 	/*pre-defined frequency of the characters, source: Wikipedia*/
@@ -296,21 +369,21 @@ void buildTree(node_t **tree){
         smallOne = lookForSmaller(arr,-1);
         smallTwo = lookForSmaller(arr,smallOne);
 		
-		/*temp holds the pointer to the actual smallest node*/
+	/*temp holds the pointer to the actual smallest node*/
         temp = arr[smallOne];
 		
         arr[smallOne] = malloc(sizeof(node_t));
 		
-		/*value of the parent node is the sum of the value of 2 child nodes*/
-        arr[smallOne]->frequency = temp->frequency + arr[smallTwo]->frequency;
+	/*value of the parent node is the sum of the value of 2 child nodes*/
+        arr[smallOne]->frequency = temp->frequency+arr[smallTwo]->frequency;
 		
-		/*the parent node does not have any letter, therefore it's 127 (DEL)*/
+	/*the parent node does not have any letter, therefore it's 127 (DEL)*/
         arr[smallOne]->letter = 127;
 		arr[smallOne]->right = temp;
         arr[smallOne]->left = arr[smallTwo];
 		
-		/*the frequency of smallTwo is now -1 to indicate it has been used
-		so that wedont have to actually delete smallTwo from the array*/
+	/*the frequency of smallTwo is now -1 to indicate it has been used
+	so that wedont have to actually delete smallTwo from the array*/
         arr[smallTwo]->frequency = -1;
         subNum--;
     }
@@ -318,8 +391,17 @@ void buildTree(node_t **tree){
     *tree = arr[smallOne];
 }
 
-/* builds the table and assign the bit for each letter: 
-1 stands for binary 0 and 2 for binary 1*/
+/**********************************************************
+fill - Hai
+-This function builds the table and assign the bit for each letter: 
+1 stands for binary 0 and 2 for binary 1
+-Inputs: 
+	+ binaryTable[]: the table you want to write the binary code to
+	+ *treep: the constructed Huffman tree
+	+ binary: initial code for filling in the table
+-Outputs:
+	none
+***********************************************************/
 void fill(int binaryTable[], node_t *treep, int binary){
 	
     if (treep->letter < frequencyArrLen){
@@ -332,7 +414,16 @@ void fill(int binaryTable[], node_t *treep, int binary){
 
 }
 
-/*function to compress the input*/
+/**********************************************************
+compress - Hai
+-This function compresses the input
+-Inputs: 
+	+ *inp: pointer to the input file
+	+ *outp: pointer to the output file
+	+ binaryTable[]: the table include the binary code
+-Outputs:
+	none
+***********************************************************/
 void compress(FILE *inp, FILE *outp, int binaryTable[]){
     char ch, bit, a = 0;
     int n, len;
@@ -346,12 +437,12 @@ void compress(FILE *inp, FILE *outp, int binaryTable[]){
 		
 		/*handle spaces*/
         if (ch == 32){
-			n = binaryTable[frequencyArrLen-1];
+		n = binaryTable[frequencyArrLen-1];
             len = len(binaryTable[frequencyArrLen-1]);
         }
 		/*handle alphabet characters*/
         else{
-			n = binaryTable[ch-97];
+		n = binaryTable[ch-97];
             len = len(binaryTable[ch-97]);
         }
 
@@ -387,6 +478,16 @@ void compress(FILE *inp, FILE *outp, int binaryTable[]){
 
 }
 
+/**********************************************************
+decompress - Hai
+-This function compresses the input
+-Inputs: 
+	+ *inp: pointer to the input file
+	+ *outp: pointer to the output file
+	+ *treep: the constructed huffman tree
+-Outputs:
+	none
+***********************************************************/
 void decompress (FILE *inp, FILE *outp, node_t *treep){
     node_t *currentp = treep;
     char sign = 1 << 7;
@@ -435,7 +536,16 @@ void decompress (FILE *inp, FILE *outp, node_t *treep){
 }
 
 
-/*invert the codes in binaryTable2 so they can be used with mod operator by 'compress' function*/
+/**********************************************************
+invertCode - Hai
+-This function inverts the codes in binaryTable2 so they can be 
+used with mod operator by 'compress' function
+-Inputs: 
+	+ binaryTable[]: table code used for filling the table
+	+ binaryTable2[]: table code used for the compression
+-Outputs:
+	none
+***********************************************************/
 void invertCode(int binaryTable[],int binaryTable2[]){
     int i, num , temp;
 
@@ -454,6 +564,15 @@ void invertCode(int binaryTable[],int binaryTable2[]){
 }
 
 
+/**********************************************************
+compressHuffman - Hai
+-This function compresses the input and produce output
+-Inputs: 
+	+ filename[]: the name of the file you want to compress
+	+ binaryTable[]: the table include the binary code
+-Outputs:
+	+ 1 if success, 0 otherwise
+***********************************************************/
 int compressHuffman(char filename[], int binaryTable[]){
 	
     FILE *inp, *comp;
@@ -479,6 +598,15 @@ int compressHuffman(char filename[], int binaryTable[]){
 	return 1;
 }
 
+/**********************************************************
+decompressHuffman - Hai
+-This function decompresses the input and produce output
+-Inputs: 
+	+ filename[]: the name of the file you want to compress
+	+ *treep: the tree containing the huffman mappingj
+-Outputs:
+	+ 1 if success, 0 otherwise
+***********************************************************/
 int decompressHuffman(char filename[], node_t *treep){
 	
     FILE *inp, *decomp;
