@@ -4,7 +4,7 @@
 #include "user.h"
 #include "file.h"
 
-#define DEBUG
+/*#define DEBUG*/
 
 /*****************************************************************************
 Set password function 
