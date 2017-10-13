@@ -5,10 +5,10 @@
 #include <math.h>
 
 #include "user.h"	/*User_t, modifyAccount, loginAuthentication, 
-getCurrentUser, displayUsers, createNewUser, readUserDatabase, saveUserDatabase,
-checkUser, copyUser, setUsername, setPassword */
-#include "file.h"		/*readFileDatabase, saveFileDatabase, modifyFileDetails,
-displayFiles, addFile, deleteFile, encryptDecrypt, createHuffman*/
+getCurrentUser, displayUsers, createNewUser, readUserDatabase, 
+saveUserDatabase, checkUser, copyUser, setUsername, setPassword */
+#include "file.h"		/*readFileDatabase, saveFileDatabase, addFile
+modifyFileDetails, displayFiles, deleteFile, encryptDecrypt, createHuffman*/
 #include "helper.h"		/*showmenu, clear*/
 
 
@@ -78,7 +78,8 @@ int main(int argc, char* argv[])
 	readFileDatabase(fileHeadp);
 
 
-	/*see if there are any users in program(check results of readUserDatabase*/
+	/*see if there are any users in program
+	(check results of readUserDatabase*/
 	int check = checkUser(userHeadp);
 
 
@@ -317,10 +318,11 @@ int main(int argc, char* argv[])
 								displayUsers(userHeadp);
 
 								printf("\n\n");
-								printf("Users in the database are listed above."
-									"\nPlease enter the username of the user "
-									"you wish to modify. If you wish to cancel"
-									", type 'CANCEL' (in capitals)\n");
+								printf("Users in the database are listed"
+									" above.\nPlease enter the username of "
+									"the user you wish to modify. If you wish"
+									" to cancel, type 'CANCEL' "
+									"(in capitals)\n");
 								scanf("%s", name);
 
 
@@ -339,10 +341,11 @@ int main(int argc, char* argv[])
 									/*Error message for no user selected*/
 									if(tempUserp==NULL)
 									{
-										printf("That username does not exist.\n"
-										"\nPlease enter a (non-admin) username "
-										"from the options shown above, or type"
-										" 'CANCEL'\n");									
+										printf("That username does not "
+											"exist.\n\nPlease enter a (non-"
+											"admin) username from the options"
+											" shown above, or type"
+											" 'CANCEL'\n");									
 									}
 
 									/*Error mesage for editting an admin*/
@@ -350,12 +353,13 @@ int main(int argc, char* argv[])
 									{
 										printf("That is an admin.\n\n"
 										"Please enter a (non-admin) username "
-										"from the options shown above, or type"
-										" 'CANCEL'\n");
+										"from the options shown above, or "
+										"type 'CANCEL'\n");
 									}
 									
 									scanf("%s", name);
-									tempUserp = getCurrentUser(name, userHeadp);
+									tempUserp = getCurrentUser(name, 
+													userHeadp);
 									printf("\n");
 								}
 
@@ -568,9 +572,9 @@ int main(int argc, char* argv[])
 } /*end main*/
 
 
-/*******************************************************************************
+/*****************************************************************************
 User defined functions!!
-*******************************************************************************/
+*****************************************************************************/
 
 
 /*****************************************************************************
@@ -925,7 +929,7 @@ int modifyAccount(User_t* userHeadp, User_t* currentUserp, int mode)
 			char name[MAX_USERNAME_SIZE], 
 			password[MAX_PASSWORD_SIZE];
 
-			/*Mode 0 is for modifying own acct, else is modifying other accts*/
+			/*Mode 0 is for modifying own acct, else modifying other accts*/
 
 
 			if(mode==0)
@@ -1239,7 +1243,7 @@ void modifyFileDetails(User_t* currentUserp, File_t* fileHeadp)
 			scanf("%s", name);
 			strcpy(name1, name);
 
-			int success = deleteFile(fileHeadp, name1, currentUserp->username); 
+			int success = deleteFile(fileHeadp, name1,currentUserp->username); 
 
 			if (success==1)
 			{
@@ -1258,11 +1262,8 @@ void modifyFileDetails(User_t* currentUserp, File_t* fileHeadp)
 		{
 			/*char filename[MAX_FILENAME_SIZE];
 			strcpy(filename, "a");
-
 			char password[MAX_PASSWORD_SIZE];
 			strcpy(password, "test");
-
-
 			encryptDecrypt(filename, password);*/
 
 			int encrypt_status = 0;
@@ -1296,7 +1297,6 @@ void modifyFileDetails(User_t* currentUserp, File_t* fileHeadp)
 		{
 			/*char filename[MAX_FILENAME_SIZE];
 			strcpy(filename, "a");
-
 			char password[MAX_PASSWORD_SIZE];
 			strcpy(password, "test");*/
 			int decrypt_status = 0;
@@ -1343,16 +1343,16 @@ void modifyFileDetails(User_t* currentUserp, File_t* fileHeadp)
 			
 			strcpy(compressName, "compressed.txt");
 			strcpy(type, "compressed");
-			printf("Please enter the name of the file you want to compress: ");
-			scanf("%s", filename);
+			printf("Please enter the name of the file to compress: \n");
+			scanf(" %s", filename);
 			
-			filep = searchFilename(fileHeadp, filename, currentUserp->username);
+			filep = searchFilename(fileHeadp,filename,currentUserp->username);
 
 			if(filep == NULL){
 				printf("ERROR, FILE NOT FOUND!!!");
 			}
 			else{
-				addFile(fileHeadp, currentUserp->username, compressName, type);
+				addFile(fileHeadp,currentUserp->username, compressName, type);
 				check = compressHuffman(filename, binaryTable2);
 				
 				if(check == 1){
@@ -1381,13 +1381,13 @@ void modifyFileDetails(User_t* currentUserp, File_t* fileHeadp)
 			printf("Please enter the name of the file you to decompress: ");
 			scanf("%s", filename);
 			
-			filep = searchFilename(fileHeadp, filename, currentUserp->username);
+			filep = searchFilename(fileHeadp,filename,currentUserp->username);
 
 			if(filep == NULL){
 				printf("ERROR, FILE NOT FOUND!!!");
 			}
 			else{
-				addFile(fileHeadp, currentUserp->username, decompressName,type);
+				addFile(fileHeadp,currentUserp->username,decompressName,type);
 				check = decompressHuffman(filename, treep);
 				
 				if(check == 1){
@@ -1418,4 +1418,3 @@ void modifyFileDetails(User_t* currentUserp, File_t* fileHeadp)
 		}
 	}
 }
-
