@@ -19,7 +19,8 @@ int loginAuthentication(char name[], char pass[], User_t* headp)
 	User_t* user = headp;
 	while(user!= NULL )
 	{
-		if((strcmp(user->username, name)==0)&&(strcmp(user->password, pass)==0))
+		if((strcmp(user->username, name)==0)&&
+		   (strcmp(user->password, pass)==0))
 		{
 			return check = user->status;
 		}
