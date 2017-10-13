@@ -12,10 +12,10 @@ displayFiles, addFile, deleteFile, encryptDecrypt, createHuffman*/
 #include "helper.h"		/*showmenu, clear*/
 
 
-#define DB_FILE_NAME_USER "DB_user"
-#define DB_FILE_NAME_FILE "DB_file"
+#define DB_FILE_NAME_USER ".DB_user"
+#define DB_FILE_NAME_FILE ".DB_file"
 
-
+#define DEBUG
 
 /*****************************************************************************
 Main function
@@ -67,7 +67,10 @@ int main(int argc, char* argv[])
 
 	/*Used for checkUser function*/
 	userHeadp -> status = 0;
-
+	
+	/*decrypt USER DATABASE and the FILE DATABASE*/
+	encryptDecrypt(DB_FILE_NAME_USER, "this is the password");
+	encryptDecrypt(DB_FILE_NAME_FILE, "this is the password");
 	/*Copy userdatabase (if it exists) into the userHeadp LL*/
 	readUserDatabase(userHeadp);
 
@@ -77,6 +80,7 @@ int main(int argc, char* argv[])
 
 	/*see if there are any users in program(check results of readUserDatabase*/
 	int check = checkUser(userHeadp);
+
 
 
 /*Command line parseing*/
@@ -180,6 +184,11 @@ int main(int argc, char* argv[])
 				saveUserDatabase(userHeadp);
 				saveFileDatabase(fileHeadp);
 
+
+				/*encrypt databases on exit*/
+				encryptDecrypt(DB_FILE_NAME_USER, "this is the password");
+				encryptDecrypt(DB_FILE_NAME_FILE, "this is the password");
+				
 				return 0;
 			}
 
@@ -1006,6 +1015,9 @@ int modifyAccount(User_t* userHeadp, User_t* currentUserp, int mode)
 
 				/*dlete user function goes here*/
 
+				#ifdef DEBUG
+				printf("deletedebug1");
+				#endif
 				deleteUser(userHeadp, name);
 
 

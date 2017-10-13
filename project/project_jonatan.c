@@ -52,7 +52,7 @@ int encryptDecrypt(char* filename,  char* password)
 
 	if(original_filep == NULL)
 	{
-		printf("Read error opening original file\n");
+		/*printf("Read error opening original file\n");*/
 		remove("encrypted.txt");
 		return 0;
 	}
@@ -92,6 +92,7 @@ int encryptDecrypt(char* filename,  char* password)
 		}
 	}while(ch != EOF);
 
+	
 	int removed;
 	removed = remove(filename);
 	
