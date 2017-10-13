@@ -1,12 +1,23 @@
 #include <stdio.h> /*printf, remove, rename, */
 #include <stdlib.h> /*fclose, fprintf, fopen, malloc, free*/
 #include <string.h> /*strcmp, strcpy*/
-#include "helper.h"
+#include "helper.h" /*handleParsing, help, contains, getValue*/
 #include "file.h" /*buildTree, fill, invertCode, compressHuffman, 
-decompressHuffman,*/
+					decompressHuffman,*/
 #include "user.h" /*loginAuthentication*/
-/*#define DEBUG_MODE
-*/
+
+/*#define DEBUG_MODE*/
+/*#define DEBUG_MODE_ENCRYPTION*/
+
+/*****************************************************************************
+showMenu - Jonatan
+-This function displays the initial selection menu to the user based on what
+type of user they are
+-Inputs: 
+	+ the userType (i.e. standard user or admininstrator)
+-Outputs:
+	+ none
+*****************************************************************************/
 void showMenu(int userType)
 {
 	char* options = "Logged in as Administrator";
@@ -27,15 +38,17 @@ void showMenu(int userType)
 	}
 }
 
-/*
-	author: Jonatan
-*/
+/*****************************************************************************
+encryptDecrypt - Jonatan
+-This function encrypts and decrypts a text file with the password that is 
+given
+-Inputs: 
+	+ the file name and the password to encrypt it with
+-Outputs:
+	+ integer(successful) 1 or 0 (unsuccessful)
+*****************************************************************************/
 int encryptDecrypt(char* filename,  char* password)
 {
-	/*
-		we might have to add an aditional field to the struct to see if the 
-		file is encrypted or not it is, return 0
-	*/
 	int i = 0;
 	char ch;
 
@@ -92,7 +105,7 @@ int encryptDecrypt(char* filename,  char* password)
 		}
 	}while(ch != EOF);
 
-	
+	/*remove original file and rename the encrypted file to the original*/
 	int removed;
 	removed = remove(filename);
 	
@@ -115,6 +128,16 @@ int encryptDecrypt(char* filename,  char* password)
 	return 1;
 } /*end encryptDecrypt*/
 
+/*****************************************************************************
+handleParsing - Jonatan
+-This function handles any parsing that the program performs
+-Inputs: 
+	+ the argument count
+	+ the argument vector
+	+ the head node of the user list
+-Outputs:
+	+ integer(successful) 1 or 0 (unsuccessful)
+*****************************************************************************/
 int handleParsing(int argc, char* argv[], User_t* userHeadp)
 {
 	char* filename = "\0";
@@ -258,8 +281,17 @@ int handleParsing(int argc, char* argv[], User_t* userHeadp)
 		printf("Invalid statements! use -h or -help for more info\n");
 	}
 	return 0;
-}
+} /*end handleParsing*/
 
+/*****************************************************************************
+help - Jonatan
+-This function displays the help menu for command line parsing commands
+-Inputs: 
+	+ the argument count
+	+ the argument vector
+-Outputs:
+	+ none
+*****************************************************************************/
 void help()
 {
 	clear();
@@ -284,8 +316,20 @@ void help()
 		"  -h    |  -help\t\t   show the help menu\n"
 		"  -urn  |  -username\t\t   username of person in the system\n"
 		"  -urp  |  -userpassword\t   password of person in the system\n");
-}
+} /*end help*/
 
+/*****************************************************************************
+contains - Jonatan
+-This function checks if the given argument vector contains the 
+given arguments
+-Inputs: 
+	+ the argument count
+	+ the argument vector
+	+ the short version of the command
+	+ the long version of the command
+-Outputs:
+	+ added: count of how many times and argumen occurs
+*****************************************************************************/
 int contains(int argc, char* argv[], char* short_arg, char* long_arg)
 {
 	int i; 
@@ -305,8 +349,20 @@ int contains(int argc, char* argv[], char* short_arg, char* long_arg)
 		return 0;
 	}
 	return count;
-}
+} /*end help*/
 
+/*****************************************************************************
+getValue - Jonatan
+-This function returns the value that is requested
+-Inputs: 
+	+ the argument count
+	+ the argument vector
+	+ the short version of the command
+	+ the long version of the command
+	+ the value that is to be changed
+-Outputs:
+	+ none
+*****************************************************************************/
 void getValue(int argc, char* argv[], char* short_arg1, 
 	char* long_arg1, char* value[])
 {
@@ -324,4 +380,4 @@ void getValue(int argc, char* argv[], char* short_arg1,
 			*value = argv[i+1];
 		}
 	}
-}
+} /*end getValue*/
