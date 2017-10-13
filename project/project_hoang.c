@@ -106,6 +106,18 @@ int deleteUser(User_t *userheadp, char name[])
 	return 1;
 }
 
+/**********************************************************
+searchUser - Hoang
+-This function searches for a user in the database that
+has the same name.
+-Inputs: 
+	+ *userheadp: pointer to the head user of the linked list
+	+ name[]: the name of the user you want to look for
+	
+-Outputs:
+	+ return a pointer to the match user; return NULL 
+	if cannot find the user or there is no user in the database
+***********************************************************/
 User_t *searchUser(User_t* userheadp, char name[])
 {
 	User_t *currentp = userheadp;
