@@ -59,7 +59,7 @@ checkDuplicateUser- Hai
 -Outputs:
 	+ check: 1 if there is a duplicate, 0 otherwise
 ***********************************************************/
-int checkDuplicateUser(User_t *headUser, char name[]); /*worked*/
+int checkDuplicateUser(User_t *headUser, char const name[]); 
 
 /**********************************************************
 displayUsers - Hai
