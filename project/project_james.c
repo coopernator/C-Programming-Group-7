@@ -15,7 +15,7 @@ displayFiles, addFile, deleteFile, encryptDecrypt, createHuffman*/
 #define DB_FILE_NAME_USER ".DB_user"
 #define DB_FILE_NAME_FILE ".DB_file"
 
-#define DEBUG
+/*#define DEBUG*/
 
 /*****************************************************************************
 Main function
@@ -573,7 +573,16 @@ User defined functions!!
 *******************************************************************************/
 
 
-
+/*****************************************************************************
+Author: James
+Name:getCurrentUser
+Explanation: Returns the User_t which has a given name
+input:
+ - char* name - The name that we want to match for
+ - User_t* userHeadp - The head of the user Linked List
+output:
+ - User_t* - the node of the linked list that has inputted name
+*****************************************************************************/
 User_t* getCurrentUser(char* name, User_t* userHeadp)
 {
 	User_t* currentp = userHeadp;
@@ -594,6 +603,16 @@ User_t* getCurrentUser(char* name, User_t* userHeadp)
 	return currentp;
 }
 
+/*****************************************************************************
+Author: James
+Name:copyUser
+Explanation: Creates a new User_t node that contains the same data as an input
+			node, however is not linked to any of the other nodes in the LL
+input:
+ - User_t* currentp - The node of the linked list that is being copied
+output:
+ - User_t* - a newcopy of the input node (without the data links)
+*****************************************************************************/
 User_t* copyUser(User_t* currentp)
 {
 	User_t* copyp = (User_t*) malloc(sizeof(User_t*));
@@ -613,7 +632,18 @@ User_t* copyUser(User_t* currentp)
 
 
 
-
+/*****************************************************************************
+Author: James
+Name:checkUser
+Explanation: Checks if there are users in the linked list
+input:
+ - User_t* userHeadp - The head of the user Linked List 
+output:
+ - User_t* - 0 if there are no users in the LL, or if status = 0 
+ 			(value set for identifying if empty.). 
+ 		   - 1 if there are valid users in the LL(valid users have status 1/2)
+ 		   - 2 if neither conditions are wrong (i.e. theres a bug) 
+*****************************************************************************/
 
 int checkUser(User_t* userHeadp)
 {
@@ -631,6 +661,15 @@ int checkUser(User_t* userHeadp)
 	}
 }
 
+/*****************************************************************************
+Author: Jonatan
+Name:clear
+Explanation: clears the page on the terminal
+input:
+ - none
+output:
+ - none
+*****************************************************************************/
 void clear()
 {
 	/*Clears the page*/
@@ -640,8 +679,15 @@ void clear()
 
 
 
-/*
-appears to produce error i.e. fp not defined even though it is */
+/*****************************************************************************
+Author: James
+Name:saveUserDatabase
+Explanation: saves the userp LL into the user database 
+input:
+ - User_t* userp - the user head that will be saved into the database
+output:
+ - int - 1 if successful, 0 if unsuccessful
+*****************************************************************************/
 int saveUserDatabase(User_t* userp)
 {
 	User_t* currentp = userp;
@@ -673,6 +719,15 @@ int saveUserDatabase(User_t* userp)
 	
 }
 
+/*****************************************************************************
+Author: James
+Name:readUserDatabase
+Explanation: Saves the contents of the user database into the user Linkedlist
+input:
+ - User_t* userp - the user head that the db will be saved into
+output:
+ - int - 1 if successful, 0 if unsuccessful
+*****************************************************************************/
 
 int readUserDatabase(User_t* userp)
 {
@@ -724,6 +779,15 @@ int readUserDatabase(User_t* userp)
 }
 
 
+/*****************************************************************************
+Author: James
+Name:saveFileDatabase
+Explanation: saves the filep LL into the file database 
+input:
+ - File_t* filep - the file head of the LL that will be saved into the db
+output:
+ - int - 1 if successful, 0 if unsuccessful
+*****************************************************************************/
 
 int saveFileDatabase(File_t* filep)
 {
@@ -755,7 +819,15 @@ int saveFileDatabase(File_t* filep)
 	
 }
 
-
+/*****************************************************************************
+Author: James
+Name:readFileDatabase
+Explanation: saves the file db into the file Linked list
+input:
+ - File_t* filep - the file head of the LL that the db will be saved into
+output:
+ - int - 1 if successful, 0 if unsuccessful
+*****************************************************************************/
 int readFileDatabase(File_t* filep)
 {
 
@@ -810,9 +882,22 @@ int readFileDatabase(File_t* filep)
 
 
 
-/*******************************************************************************
-
-*******************************************************************************/
+/*****************************************************************************
+Author: James
+Name:modifyAccount
+Explanation: Allows the User_t* currentUserp's account to be modified. 
+			Depending on the mode, either the user will modify their own
+			account, or an admin will modify the account.
+			Allows the username and password to be changed and the account to 
+			be deleted
+input:
+ - User_t* userHeadp - The head of the user LL
+ - User_t* currentUserp - The account of the user that is being modified
+ - int mode - mode 0 is for modifying your own account
+  			- mode 1 is for modifying other users account (for admin use only)
+ output:
+ - int - returns 1 if the user deletes their account, returns 0 otherwise
+*****************************************************************************/
 
 int modifyAccount(User_t* userHeadp, User_t* currentUserp, int mode)
 {
@@ -1067,9 +1152,18 @@ int modifyAccount(User_t* userHeadp, User_t* currentUserp, int mode)
 	return 0;
 }
 
-/*******************************************************************************
-
-*******************************************************************************/
+/*****************************************************************************
+Author: James
+Title: modifyFileDetails
+Explanation: Allows the User_t* currentUserp's account to be modified. Allows 
+				files to be added, deleted, viewed, encrypted, compressed, 
+				decrypted, decompressed. 
+input:
+ - User_t* currentUserp - The owner of the files being modified
+ - File_t* fileHeadp - The head of the file LL
+output:
+ - none
+*****************************************************************************/
 
 void modifyFileDetails(User_t* currentUserp, File_t* fileHeadp)
 {
