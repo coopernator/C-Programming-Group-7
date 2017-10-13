@@ -19,7 +19,7 @@ addFile - Hai
 -Outputs:
 	+ added: return 1 if successfully added a new file, 0 otherwise
 ***********************************************************/
-int addFile(File_t* filehead, char owner[],char name[], char type[]){
+int addFile(File_t* filehead, char const owner[],char const name[], char const type[]){
 	File_t *currentp = filehead;
 	FILE *fp;
 	int added = 0;
@@ -74,7 +74,7 @@ setFileName - Hai
 -Outputs:
 	+ added: return 1 if successfully deleted a file, 0 otherwise
 ***********************************************************/
-int setFileName(File_t *filep, File_t *fileheadp, char owner[]){
+int setFileName(File_t *filep, File_t *fileheadp, char const owner[]){
 	char name[MAX_FILENAME_SIZE];
 	
 	printf("Please enter a new filename:");
@@ -99,7 +99,7 @@ deleteFile - Hai
 -Outputs:
 	+ added: return 1 if successfully deleted a file, 0 otherwise
 ***********************************************************/
-int deleteFile(File_t *fileheadp, char name[], char owner[]){ 
+int deleteFile(File_t *fileheadp, char const name[], char const owner[]){ 
 	File_t *foundp = NULL;
 	File_t *currentp = fileheadp;
 	
@@ -138,7 +138,7 @@ has the same name and owner with the input
 	+ return a pointer to the match file; return NULL 
 	if cannot find the file or there is no file in the database
 ***********************************************************/
-File_t *searchFilename(File_t* fileheadp, char name[], char owner[]){
+File_t *searchFilename(File_t* fileheadp, char const name[], char const owner[]){
 	File_t *currentp = fileheadp;
 	
 	/*check if the database is empty*/
@@ -204,7 +204,7 @@ displayFiles - Hai
 -Outputs:
 	none
 ***********************************************************/
-void displayFiles(File_t *fileheadp, char owner[]){
+void displayFiles(File_t *fileheadp, char const owner[]){
 	File_t *currentp = fileheadp;
 	File_t *temp = fileheadp;
 	int numFile = 0;
@@ -250,7 +250,7 @@ user that has the same name
 -Outputs:
 	+ int check: return 1 if there is a duplicate, 0 otherwise
 ***********************************************************/
-int checkDuplicateUser(User_t *headUserp, char name[]){
+int checkDuplicateUser(User_t *headUserp, char const name[]){
 	int check = 0;
 	User_t *currentp = headUserp;
 	
@@ -279,7 +279,7 @@ checkDuplicateFile - Hai
 -Outputs:
 	+ check: 1 if there is a duplicate, 0 otherwise
 ***********************************************************/
-int checkDuplicateFile(File_t *fileheadp, char name[], char owner[]){
+int checkDuplicateFile(File_t *fileheadp, char const name[], char const owner[]){
 	int check = 0;
 	File_t *currentp = fileheadp;
 	
