@@ -1,9 +1,7 @@
 #ifndef USER
 #define USER
 
-#define USERNAME_SIZE 10
-#define PASS_SIZE 10
-#define NAME_SIZE 10
+
 #define MAX_USERNAME_SIZE 21
 #define MAX_PASSWORD_SIZE 16
 #define MAX_STATUS_SIZE 6

@@ -22,4 +22,4 @@ project_jonatan.o : project_jonatan.c user.h helper.h file.h
 	$(CC) $(CFLAGS) -c -o project_jonatan.o project_jonatan.c -lm
 
 clean :
-	rm project_james.o project_huy.o project_hoang.o project_jonatan.o project_hai.o
+	rm project_james.o project_huy.o project_hoang.o project_jonatan.o project_hai.o DB_file DB_user

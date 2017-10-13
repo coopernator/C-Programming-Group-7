@@ -4,6 +4,8 @@
 #include "user.h"
 #include "file.h"
 
+#define DEBUG
+
 /*****************************************************************************
 Set password function 
 Author: Duc Huy Nguyen
@@ -16,7 +18,7 @@ None
 ******************************************************************************/
 void setPassword(User_t *userp) 
 {
-	char pass[PASS_SIZE];
+	char pass[MAX_PASSWORD_SIZE];
 	printf("Enter your new password: ");
 	scanf("%s", pass);
 	strcpy(userp->password, pass); /*set current password to a new one
@@ -36,7 +38,7 @@ success (status)
 int setUsername(User_t *userp, User_t *headUserp)
 {
 	int success = 0;
-	char user[USERNAME_SIZE];
+	char user[MAX_USERNAME_SIZE];
 	printf("Enter your new username: ");
 	scanf("%s", user);
 	if(checkDuplicateUser(headUserp, user) == 0){ /*checking for duplicates*/
@@ -93,11 +95,16 @@ int createNewUser(User_t *userlistp, int status)
 		printf("Enter desired password:\n");
 		scanf("%s", password);
 
-
+	#ifdef DEBUG
+	printf("debug1\n\n");
+	#endif
 
 		while(u->nextp != NULL)
 		{
 			u = u->nextp; 
+#ifdef DEBUG
+	printf("addusermem = %p\n\n", u);
+	#endif
 		}
 
 		
