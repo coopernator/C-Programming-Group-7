@@ -54,9 +54,10 @@ setFileName - Hai
 -Outputs:
 	+ added: return 1 if successfully deleted a file, 0 otherwise
 ***********************************************************/
-int setFileName(File_t *filep, File_t *fileheadp, char owner[]);
+int setFileName(File_t *filep, File_t *fileheadp, char const owner[]);
 
-File_t *searchFilename(File_t* fileheadp, char name[], char owner[]);
+File_t *searchFilename(File_t* fileheadp, 
+		       char const name[], char const owner[]);
 
 /**********************************************************
 addFile - Hai
@@ -69,7 +70,9 @@ addFile - Hai
 -Outputs:
 	+ added: return 1 if successfully added a new file, 0 otherwise
 ***********************************************************/
-int addFile(File_t* filehead, char owner[],char name[], char type[]);
+int addFile(File_t* filehead, char const owner[],
+	    char const name[], char const type[]);
+
 
 /**********************************************************
 deleteFile - Hai
@@ -80,7 +83,7 @@ deleteFile - Hai
 -Outputs:
 	+ added: return 1 if successfully deleted a file, 0 otherwise
 ***********************************************************/
-int deleteFile(File_t *fileheadp, char name[], char owner[]);
+int deleteFile(File_t *fileheadp, char const name[], char const owner[]);
 
 /**********************************************************
 checkDuplicateFile - Hai
@@ -92,7 +95,8 @@ checkDuplicateFile - Hai
 -Outputs:
 	+ check: 1 if there is a duplicate, 0 otherwise
 ***********************************************************/
-int checkDuplicateFile(File_t *headFile, char name[], char owner[]); 
+int checkDuplicateFile(File_t *headFile,
+		       char const name[], char const owner[]); 
 
 /**********************************************************
 displayFiles - Hai
@@ -102,7 +106,7 @@ displayFiles - Hai
 -Outputs:
 	none
 ***********************************************************/
-void displayFiles(File_t *filehead, char owner[]);
+void displayFiles(File_t *filehead, char const owner[]);
 
 
 
