@@ -10,9 +10,8 @@ loginAuthentication - Hoang
 	+ name[]: the name we use to look for 
 	+ pass[]: the password we use to look for
 	+ headp: pointer for the head file of the linked list
-
 -Outputs:
-	+ return check = 1 if the user is authenticated otherwise return check = 0.
+	+ return check = 1 if the user is authenticated otherwise return check = 0
 ***********************************************************/
 int loginAuthentication(char name[], char pass[], User_t* headp)
 {
@@ -76,7 +75,8 @@ deleteUser - Hoang
 	+ userheadp: pointer to the head file of the linked list
 	+ name[]: the name we use to look for
 -Outputs:
-	+ return check = 1 if the user is successfully deleted, otherwise return check = 0.
+	+ return check = 1 if the user is successfully deleted, otherwise return
+	 check = 0.
 ***********************************************************/
 int deleteUser(User_t *userheadp, char name[])
 {
@@ -85,13 +85,16 @@ int deleteUser(User_t *userheadp, char name[])
 
 	if(userheadp->nextp == NULL)
 	{
-		printf("THERE IS NO USER TO DELETE\n"); /*Display the message to show that there is no user to delete*/
+		/*Display the message to show that there is no user to delete*/
+
+		printf("THERE IS NO USER TO DELETE\n"); 
 	}
 
 	foundp = searchUser(userheadp, name);
 	if(foundp == NULL)
 	{
-		printf("USER DOES NOT EXIST\n"); /*Display the error message that the user does not exist to delete*/
+		/*Display the error message that the user does not exist to delete*/
+		printf("USER DOES NOT EXIST\n"); 
 		return 0;
 	}
 	else
@@ -106,25 +109,26 @@ int deleteUser(User_t *userheadp, char name[])
 	return 1;
 }
 
+
 /**********************************************************
 searchUser - Hoang
--This function searches for a user in the database that
-has the same name.
+-This function locates the user in the user linked list that matches the name
 -Inputs: 
-	+ *userheadp: pointer to the head user of the linked list
-	+ name[]: the name of the user you want to look for
-	
+	+ userheadp: the user head that contains the desired user
+	+ name[]: the name of the user we want to match
 -Outputs:
-	+ return a pointer to the match user; return NULL 
-	if cannot find the user or there is no user in the database
+	+ return currentp if a match is found, otherwise returns NULL
 ***********************************************************/
+
 User_t *searchUser(User_t* userheadp, char name[])
 {
 	User_t *currentp = userheadp;
 	
 	if(userheadp->nextp == NULL)
 	{
-		printf("THERE IS NO USER\n"); /*Display the message that there is no user*/
+		/*Display the message that there is no user*/
+
+		printf("THERE IS NO USER\n"); 	
 		return NULL;
 	}
 	
